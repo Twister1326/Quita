@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quita — Cobrancas on-chain na Arc</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+<script>
+var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this.parsedData=[];for(var b=[],d=0,e=this.data.length;e>d;d++){var f=this.data.charCodeAt(d);f>65536?(b[0]=240|(1835008&f)>>>18,b[1]=128|(258048&f)>>>12,b[2]=128|(4032&f)>>>6,b[3]=128|63&f):f>2048?(b[0]=224|(61440&f)>>>12,b[1]=128|(4032&f)>>>6,b[2]=128|63&f):f>128?(b[0]=192|(1984&f)>>>6,b[1]=128|63&f):b[0]=f,this.parsedData=this.parsedData.concat(b)}this.parsedData.length!=this.data.length&&(this.parsedData.unshift(191),this.parsedData.unshift(187),this.parsedData.unshift(239))}function b(a,b){this.typeNumber=a,this.errorCorrectLevel=b,this.modules=null,this.moduleCount=0,this.dataCache=null,this.dataList=[]}function i(a,b){if(void 0==a.length)throw new Error(a.length+"/"+b);for(var c=0;c<a.length&&0==a[c];)c++;this.num=new Array(a.length-c+b);for(var d=0;d<a.length-c;d++)this.num[d]=a[d+c]}function j(a,b){this.totalCount=a,this.dataCount=b}function k(){this.buffer=[],this.length=0}function m(){return"undefined"!=typeof CanvasRenderingContext2D}function n(){var a=!1,b=navigator.userAgent;return/android/i.test(b)&&(a=!0,aMat=b.toString().match(/android ([0-9]\.[0-9])/i),aMat&&aMat[1]&&(a=parseFloat(aMat[1]))),a}function r(a,b){for(var c=1,e=s(a),f=0,g=l.length;g>=f;f++){var h=0;switch(b){case d.L:h=l[f][0];break;case d.M:h=l[f][1];break;case d.Q:h=l[f][2];break;case d.H:h=l[f][3]}if(h>=e)break;c++}if(c>l.length)throw new Error("Too long data");return c}function s(a){var b=encodeURI(a).toString().replace(/\%[0-9a-fA-F]{2}/g,"a");return b.length+(b.length!=a?3:0)}a.prototype={getLength:function(){return this.parsedData.length},write:function(a){for(var b=0,c=this.parsedData.length;c>b;b++)a.put(this.parsedData[b],8)}},b.prototype={addData:function(b){var c=new a(b);this.dataList.push(c),this.dataCache=null},isDark:function(a,b){if(0>a||this.moduleCount<=a||0>b||this.moduleCount<=b)throw new Error(a+","+b);return this.modules[a][b]},getModuleCount:function(){return this.moduleCount},make:function(){this.makeImpl(!1,this.getBestMaskPattern())},makeImpl:function(a,c){this.moduleCount=4*this.typeNumber+17,this.modules=new Array(this.moduleCount);for(var d=0;d<this.moduleCount;d++){this.modules[d]=new Array(this.moduleCount);for(var e=0;e<this.moduleCount;e++)this.modules[d][e]=null}this.setupPositionProbePattern(0,0),this.setupPositionProbePattern(this.moduleCount-7,0),this.setupPositionProbePattern(0,this.moduleCount-7),this.setupPositionAdjustPattern(),this.setupTimingPattern(),this.setupTypeInfo(a,c),this.typeNumber>=7&&this.setupTypeNumber(a),null==this.dataCache&&(this.dataCache=b.createData(this.typeNumber,this.errorCorrectLevel,this.dataList)),this.mapData(this.dataCache,c)},setupPositionProbePattern:function(a,b){for(var c=-1;7>=c;c++)if(!(-1>=a+c||this.moduleCount<=a+c))for(var d=-1;7>=d;d++)-1>=b+d||this.moduleCount<=b+d||(this.modules[a+c][b+d]=c>=0&&6>=c&&(0==d||6==d)||d>=0&&6>=d&&(0==c||6==c)||c>=2&&4>=c&&d>=2&&4>=d?!0:!1)},getBestMaskPattern:function(){for(var a=0,b=0,c=0;8>c;c++){this.makeImpl(!0,c);var d=f.getLostPoint(this);(0==c||a>d)&&(a=d,b=c)}return b},createMovieClip:function(a,b,c){var d=a.createEmptyMovieClip(b,c),e=1;this.make();for(var f=0;f<this.modules.length;f++)for(var g=f*e,h=0;h<this.modules[f].length;h++){var i=h*e,j=this.modules[f][h];j&&(d.beginFill(0,100),d.moveTo(i,g),d.lineTo(i+e,g),d.lineTo(i+e,g+e),d.lineTo(i,g+e),d.endFill())}return d},setupTimingPattern:function(){for(var a=8;a<this.moduleCount-8;a++)null==this.modules[a][6]&&(this.modules[a][6]=0==a%2);for(var b=8;b<this.moduleCount-8;b++)null==this.modules[6][b]&&(this.modules[6][b]=0==b%2)},setupPositionAdjustPattern:function(){for(var a=f.getPatternPosition(this.typeNumber),b=0;b<a.length;b++)for(var c=0;c<a.length;c++){var d=a[b],e=a[c];if(null==this.modules[d][e])for(var g=-2;2>=g;g++)for(var h=-2;2>=h;h++)this.modules[d+g][e+h]=-2==g||2==g||-2==h||2==h||0==g&&0==h?!0:!1}},setupTypeNumber:function(a){for(var b=f.getBCHTypeNumber(this.typeNumber),c=0;18>c;c++){var d=!a&&1==(1&b>>c);this.modules[Math.floor(c/3)][c%3+this.moduleCount-8-3]=d}for(var c=0;18>c;c++){var d=!a&&1==(1&b>>c);this.modules[c%3+this.moduleCount-8-3][Math.floor(c/3)]=d}},setupTypeInfo:function(a,b){for(var c=this.errorCorrectLevel<<3|b,d=f.getBCHTypeInfo(c),e=0;15>e;e++){var g=!a&&1==(1&d>>e);6>e?this.modules[e][8]=g:8>e?this.modules[e+1][8]=g:this.modules[this.moduleCount-15+e][8]=g}for(var e=0;15>e;e++){var g=!a&&1==(1&d>>e);8>e?this.modules[8][this.moduleCount-e-1]=g:9>e?this.modules[8][15-e-1+1]=g:this.modules[8][15-e-1]=g}this.modules[this.moduleCount-8][8]=!a},mapData:function(a,b){for(var c=-1,d=this.moduleCount-1,e=7,g=0,h=this.moduleCount-1;h>0;h-=2)for(6==h&&h--;;){for(var i=0;2>i;i++)if(null==this.modules[d][h-i]){var j=!1;g<a.length&&(j=1==(1&a[g]>>>e));var k=f.getMask(b,d,h-i);k&&(j=!j),this.modules[d][h-i]=j,e--,-1==e&&(g++,e=7)}if(d+=c,0>d||this.moduleCount<=d){d-=c,c=-c;break}}}},b.PAD0=236,b.PAD1=17,b.createData=function(a,c,d){for(var e=j.getRSBlocks(a,c),g=new k,h=0;h<d.length;h++){var i=d[h];g.put(i.mode,4),g.put(i.getLength(),f.getLengthInBits(i.mode,a)),i.write(g)}for(var l=0,h=0;h<e.length;h++)l+=e[h].dataCount;if(g.getLengthInBits()>8*l)throw new Error("code length overflow. ("+g.getLengthInBits()+">"+8*l+")");for(g.getLengthInBits()+4<=8*l&&g.put(0,4);0!=g.getLengthInBits()%8;)g.putBit(!1);for(;;){if(g.getLengthInBits()>=8*l)break;if(g.put(b.PAD0,8),g.getLengthInBits()>=8*l)break;g.put(b.PAD1,8)}return b.createBytes(g,e)},b.createBytes=function(a,b){for(var c=0,d=0,e=0,g=new Array(b.length),h=new Array(b.length),j=0;j<b.length;j++){var k=b[j].dataCount,l=b[j].totalCount-k;d=Math.max(d,k),e=Math.max(e,l),g[j]=new Array(k);for(var m=0;m<g[j].length;m++)g[j][m]=255&a.buffer[m+c];c+=k;var n=f.getErrorCorrectPolynomial(l),o=new i(g[j],n.getLength()-1),p=o.mod(n);h[j]=new Array(n.getLength()-1);for(var m=0;m<h[j].length;m++){var q=m+p.getLength()-h[j].length;h[j][m]=q>=0?p.get(q):0}}for(var r=0,m=0;m<b.length;m++)r+=b[m].totalCount;for(var s=new Array(r),t=0,m=0;d>m;m++)for(var j=0;j<b.length;j++)m<g[j].length&&(s[t++]=g[j][m]);for(var m=0;e>m;m++)for(var j=0;j<b.length;j++)m<h[j].length&&(s[t++]=h[j][m]);return s};for(var c={MODE_NUMBER:1,MODE_ALPHA_NUM:2,MODE_8BIT_BYTE:4,MODE_KANJI:8},d={L:1,M:0,Q:3,H:2},e={PATTERN000:0,PATTERN001:1,PATTERN010:2,PATTERN011:3,PATTERN100:4,PATTERN101:5,PATTERN110:6,PATTERN111:7},f={PATTERN_POSITION_TABLE:[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],G15:1335,G18:7973,G15_MASK:21522,getBCHTypeInfo:function(a){for(var b=a<<10;f.getBCHDigit(b)-f.getBCHDigit(f.G15)>=0;)b^=f.G15<<f.getBCHDigit(b)-f.getBCHDigit(f.G15);return(a<<10|b)^f.G15_MASK},getBCHTypeNumber:function(a){for(var b=a<<12;f.getBCHDigit(b)-f.getBCHDigit(f.G18)>=0;)b^=f.G18<<f.getBCHDigit(b)-f.getBCHDigit(f.G18);return a<<12|b},getBCHDigit:function(a){for(var b=0;0!=a;)b++,a>>>=1;return b},getPatternPosition:function(a){return f.PATTERN_POSITION_TABLE[a-1]},getMask:function(a,b,c){switch(a){case e.PATTERN000:return 0==(b+c)%2;case e.PATTERN001:return 0==b%2;case e.PATTERN010:return 0==c%3;case e.PATTERN011:return 0==(b+c)%3;case e.PATTERN100:return 0==(Math.floor(b/2)+Math.floor(c/3))%2;case e.PATTERN101:return 0==b*c%2+b*c%3;case e.PATTERN110:return 0==(b*c%2+b*c%3)%2;case e.PATTERN111:return 0==(b*c%3+(b+c)%2)%2;default:throw new Error("bad maskPattern:"+a)}},getErrorCorrectPolynomial:function(a){for(var b=new i([1],0),c=0;a>c;c++)b=b.multiply(new i([1,g.gexp(c)],0));return b},getLengthInBits:function(a,b){if(b>=1&&10>b)switch(a){case c.MODE_NUMBER:return 10;case c.MODE_ALPHA_NUM:return 9;case c.MODE_8BIT_BYTE:return 8;case c.MODE_KANJI:return 8;default:throw new Error("mode:"+a)}else if(27>b)switch(a){case c.MODE_NUMBER:return 12;case c.MODE_ALPHA_NUM:return 11;case c.MODE_8BIT_BYTE:return 16;case c.MODE_KANJI:return 10;default:throw new Error("mode:"+a)}else{if(!(41>b))throw new Error("type:"+b);switch(a){case c.MODE_NUMBER:return 14;case c.MODE_ALPHA_NUM:return 13;case c.MODE_8BIT_BYTE:return 16;case c.MODE_KANJI:return 12;default:throw new Error("mode:"+a)}}},getLostPoint:function(a){for(var b=a.getModuleCount(),c=0,d=0;b>d;d++)for(var e=0;b>e;e++){for(var f=0,g=a.isDark(d,e),h=-1;1>=h;h++)if(!(0>d+h||d+h>=b))for(var i=-1;1>=i;i++)0>e+i||e+i>=b||(0!=h||0!=i)&&g==a.isDark(d+h,e+i)&&f++;f>5&&(c+=3+f-5)}for(var d=0;b-1>d;d++)for(var e=0;b-1>e;e++){var j=0;a.isDark(d,e)&&j++,a.isDark(d+1,e)&&j++,a.isDark(d,e+1)&&j++,a.isDark(d+1,e+1)&&j++,(0==j||4==j)&&(c+=3)}for(var d=0;b>d;d++)for(var e=0;b-6>e;e++)a.isDark(d,e)&&!a.isDark(d,e+1)&&a.isDark(d,e+2)&&a.isDark(d,e+3)&&a.isDark(d,e+4)&&!a.isDark(d,e+5)&&a.isDark(d,e+6)&&(c+=40);for(var e=0;b>e;e++)for(var d=0;b-6>d;d++)a.isDark(d,e)&&!a.isDark(d+1,e)&&a.isDark(d+2,e)&&a.isDark(d+3,e)&&a.isDark(d+4,e)&&!a.isDark(d+5,e)&&a.isDark(d+6,e)&&(c+=40);for(var k=0,e=0;b>e;e++)for(var d=0;b>d;d++)a.isDark(d,e)&&k++;var l=Math.abs(100*k/b/b-50)/5;return c+=10*l}},g={glog:function(a){if(1>a)throw new Error("glog("+a+")");return g.LOG_TABLE[a]},gexp:function(a){for(;0>a;)a+=255;for(;a>=256;)a-=255;return g.EXP_TABLE[a]},EXP_TABLE:new Array(256),LOG_TABLE:new Array(256)},h=0;8>h;h++)g.EXP_TABLE[h]=1<<h;for(var h=8;256>h;h++)g.EXP_TABLE[h]=g.EXP_TABLE[h-4]^g.EXP_TABLE[h-5]^g.EXP_TABLE[h-6]^g.EXP_TABLE[h-8];for(var h=0;255>h;h++)g.LOG_TABLE[g.EXP_TABLE[h]]=h;i.prototype={get:function(a){return this.num[a]},getLength:function(){return this.num.length},multiply:function(a){for(var b=new Array(this.getLength()+a.getLength()-1),c=0;c<this.getLength();c++)for(var d=0;d<a.getLength();d++)b[c+d]^=g.gexp(g.glog(this.get(c))+g.glog(a.get(d)));return new i(b,0)},mod:function(a){if(this.getLength()-a.getLength()<0)return this;for(var b=g.glog(this.get(0))-g.glog(a.get(0)),c=new Array(this.getLength()),d=0;d<this.getLength();d++)c[d]=this.get(d);for(var d=0;d<a.getLength();d++)c[d]^=g.gexp(g.glog(a.get(d))+b);return new i(c,0).mod(a)}},j.RS_BLOCK_TABLE=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],j.getRSBlocks=function(a,b){var c=j.getRsBlockTable(a,b);if(void 0==c)throw new Error("bad rs block @ typeNumber:"+a+"/errorCorrectLevel:"+b);for(var d=c.length/3,e=[],f=0;d>f;f++)for(var g=c[3*f+0],h=c[3*f+1],i=c[3*f+2],k=0;g>k;k++)e.push(new j(h,i));return e},j.getRsBlockTable=function(a,b){switch(b){case d.L:return j.RS_BLOCK_TABLE[4*(a-1)+0];case d.M:return j.RS_BLOCK_TABLE[4*(a-1)+1];case d.Q:return j.RS_BLOCK_TABLE[4*(a-1)+2];case d.H:return j.RS_BLOCK_TABLE[4*(a-1)+3];default:return void 0}},k.prototype={get:function(a){var b=Math.floor(a/8);return 1==(1&this.buffer[b]>>>7-a%8)},put:function(a,b){for(var c=0;b>c;c++)this.putBit(1==(1&a>>>b-c-1))},getLengthInBits:function(){return this.length},putBit:function(a){var b=Math.floor(this.length/8);this.buffer.length<=b&&this.buffer.push(0),a&&(this.buffer[b]|=128>>>this.length%8),this.length++}};var l=[[17,14,11,7],[32,26,20,14],[53,42,32,24],[78,62,46,34],[106,84,60,44],[134,106,74,58],[154,122,86,64],[192,152,108,84],[230,180,130,98],[271,213,151,119],[321,251,177,137],[367,287,203,155],[425,331,241,177],[458,362,258,194],[520,412,292,220],[586,450,322,250],[644,504,364,280],[718,560,394,310],[792,624,442,338],[858,666,482,382],[929,711,509,403],[1003,779,565,439],[1091,857,611,461],[1171,911,661,511],[1273,997,715,535],[1367,1059,751,593],[1465,1125,805,625],[1528,1190,868,658],[1628,1264,908,698],[1732,1370,982,742],[1840,1452,1030,790],[1952,1538,1112,842],[2068,1628,1168,898],[2188,1722,1228,958],[2303,1809,1283,983],[2431,1911,1351,1051],[2563,1989,1423,1093],[2699,2099,1499,1139],[2809,2213,1579,1219],[2953,2331,1663,1273]],o=function(){var a=function(a,b){this._el=a,this._htOption=b};return a.prototype.draw=function(a){function g(a,b){var c=document.createElementNS("http://www.w3.org/2000/svg",a);for(var d in b)b.hasOwnProperty(d)&&c.setAttribute(d,b[d]);return c}var b=this._htOption,c=this._el,d=a.getModuleCount();Math.floor(b.width/d),Math.floor(b.height/d),this.clear();var h=g("svg",{viewBox:"0 0 "+String(d)+" "+String(d),width:"100%",height:"100%",fill:b.colorLight});h.setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns:xlink","http://www.w3.org/1999/xlink"),c.appendChild(h),h.appendChild(g("rect",{fill:b.colorDark,width:"1",height:"1",id:"template"}));for(var i=0;d>i;i++)for(var j=0;d>j;j++)if(a.isDark(i,j)){var k=g("use",{x:String(i),y:String(j)});k.setAttributeNS("http://www.w3.org/1999/xlink","href","#template"),h.appendChild(k)}},a.prototype.clear=function(){for(;this._el.hasChildNodes();)this._el.removeChild(this._el.lastChild)},a}(),p="svg"===document.documentElement.tagName.toLowerCase(),q=p?o:m()?function(){function a(){this._elImage.src=this._elCanvas.toDataURL("image/png"),this._elImage.style.display="block",this._elCanvas.style.display="none"}function d(a,b){var c=this;if(c._fFail=b,c._fSuccess=a,null===c._bSupportDataURI){var d=document.createElement("img"),e=function(){c._bSupportDataURI=!1,c._fFail&&_fFail.call(c)},f=function(){c._bSupportDataURI=!0,c._fSuccess&&c._fSuccess.call(c)};return d.onabort=e,d.onerror=e,d.onload=f,d.src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",void 0}c._bSupportDataURI===!0&&c._fSuccess?c._fSuccess.call(c):c._bSupportDataURI===!1&&c._fFail&&c._fFail.call(c)}if(this._android&&this._android<=2.1){var b=1/window.devicePixelRatio,c=CanvasRenderingContext2D.prototype.drawImage;CanvasRenderingContext2D.prototype.drawImage=function(a,d,e,f,g,h,i,j){if("nodeName"in a&&/img/i.test(a.nodeName))for(var l=arguments.length-1;l>=1;l--)arguments[l]=arguments[l]*b;else"undefined"==typeof j&&(arguments[1]*=b,arguments[2]*=b,arguments[3]*=b,arguments[4]*=b);c.apply(this,arguments)}}var e=function(a,b){this._bIsPainted=!1,this._android=n(),this._htOption=b,this._elCanvas=document.createElement("canvas"),this._elCanvas.width=b.width,this._elCanvas.height=b.height,a.appendChild(this._elCanvas),this._el=a,this._oContext=this._elCanvas.getContext("2d"),this._bIsPainted=!1,this._elImage=document.createElement("img"),this._elImage.style.display="none",this._el.appendChild(this._elImage),this._bSupportDataURI=null};return e.prototype.draw=function(a){var b=this._elImage,c=this._oContext,d=this._htOption,e=a.getModuleCount(),f=d.width/e,g=d.height/e,h=Math.round(f),i=Math.round(g);b.style.display="none",this.clear();for(var j=0;e>j;j++)for(var k=0;e>k;k++){var l=a.isDark(j,k),m=k*f,n=j*g;c.strokeStyle=l?d.colorDark:d.colorLight,c.lineWidth=1,c.fillStyle=l?d.colorDark:d.colorLight,c.fillRect(m,n,f,g),c.strokeRect(Math.floor(m)+.5,Math.floor(n)+.5,h,i),c.strokeRect(Math.ceil(m)-.5,Math.ceil(n)-.5,h,i)}this._bIsPainted=!0},e.prototype.makeImage=function(){this._bIsPainted&&d.call(this,a)},e.prototype.isPainted=function(){return this._bIsPainted},e.prototype.clear=function(){this._oContext.clearRect(0,0,this._elCanvas.width,this._elCanvas.height),this._bIsPainted=!1},e.prototype.round=function(a){return a?Math.floor(1e3*a)/1e3:a},e}():function(){var a=function(a,b){this._el=a,this._htOption=b};return a.prototype.draw=function(a){for(var b=this._htOption,c=this._el,d=a.getModuleCount(),e=Math.floor(b.width/d),f=Math.floor(b.height/d),g=['<table style="border:0;border-collapse:collapse;">'],h=0;d>h;h++){g.push("<tr>");for(var i=0;d>i;i++)g.push('<td style="border:0;border-collapse:collapse;padding:0;margin:0;width:'+e+"px;height:"+f+"px;background-color:"+(a.isDark(h,i)?b.colorDark:b.colorLight)+';"></td>');g.push("</tr>")}g.push("</table>"),c.innerHTML=g.join("");var j=c.childNodes[0],k=(b.width-j.offsetWidth)/2,l=(b.height-j.offsetHeight)/2;k>0&&l>0&&(j.style.margin=l+"px "+k+"px")},a.prototype.clear=function(){this._el.innerHTML=""},a}();QRCode=function(a,b){if(this._htOption={width:256,height:256,typeNumber:4,colorDark:"#000000",colorLight:"#ffffff",correctLevel:d.H},"string"==typeof b&&(b={text:b}),b)for(var c in b)this._htOption[c]=b[c];"string"==typeof a&&(a=document.getElementById(a)),this._android=n(),this._el=a,this._oQRCode=null,this._oDrawing=new q(this._el,this._htOption),this._htOption.text&&this.makeCode(this._htOption.text)},QRCode.prototype.makeCode=function(a){this._oQRCode=new b(r(a,this._htOption.correctLevel),this._htOption.correctLevel),this._oQRCode.addData(a),this._oQRCode.make(),this._el.title=a,this._oDrawing.draw(this._oQRCode),this.makeImage()},QRCode.prototype.makeImage=function(){"function"==typeof this._oDrawing.makeImage&&(!this._android||this._android>=3)&&this._oDrawing.makeImage()},QRCode.prototype.clear=function(){this._oDrawing.clear()},QRCode.CorrectLevel=d}();
+</script>
+<style>
+  :root {
+    /* Gradiente Circle: enviar -> receber, movimento 45graus */
+    --azul: #1361F0;
+    --azul-esc: #0B3FB0;
+    --ciano: #29E0D4;
+    --ciano-esc: #12B9C9;
+    --grad: linear-gradient(120deg, var(--azul) 0%, var(--ciano) 100%);
+    --grad-suave: linear-gradient(120deg, #1361F0 0%, #29E0D4 140%);
+
+    --noite: #060B1A;        /* fundo escuro base */
+    --noite-2: #0D1530;
+    --carta: #111A38;        /* cartoes */
+    --carta-2: #16203F;
+    --linha: rgba(255,255,255,.08);
+    --linha-2: rgba(255,255,255,.14);
+
+    --texto: #F2F5FF;
+    --texto-fraco: #9AA6C4;
+    --texto-min: #6B769A;
+
+    --menta: #22D89B;        /* pronto */
+    --ambar: #FFB020;        /* falta */
+    --rubro: #FF5C6C;        /* nao */
+
+    --raio: 16px;
+    --sombra: 0 2px 8px rgba(0,0,0,.3), 0 20px 50px rgba(4,10,30,.5);
+    --brilho: 0 0 0 1px rgba(41,224,212,.25), 0 8px 30px rgba(19,97,240,.3);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--noite);
+    color: var(--texto);
+    line-height: 1.5;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  /* atmosfera: brilhos radiais no fundo */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(900px 500px at 15% -5%, rgba(19,97,240,.28), transparent 60%),
+      radial-gradient(800px 500px at 95% 8%, rgba(41,224,212,.20), transparent 55%);
+    pointer-events: none; z-index: 0;
+  }
+  .num { font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; letter-spacing: -0.02em; }
+
+  /* ---------- BARRA LATERAL DE IDIOMAS ---------- */
+  .idiomas {
+    position: fixed;
+    left: 0; top: 50%;
+    transform: translateY(-50%);
+    z-index: 40;
+    display: flex; flex-direction: column;
+    gap: 6px;
+    padding: 8px 6px;
+    background: rgba(13,21,48,.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--linha);
+    border-left: none;
+    border-radius: 0 14px 14px 0;
+  }
+  .idioma {
+    width: 38px; height: 38px;
+    border-radius: 9px;
+    border: 1px solid transparent;
+    background: transparent;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    transition: all .15s;
+    position: relative;
+    filter: grayscale(.5) opacity(.65);
+  }
+  .idioma:hover { filter: none; background: rgba(255,255,255,.06); transform: scale(1.08); }
+  .idioma.ativo { filter: none; border-color: var(--ciano); box-shadow: 0 0 0 1px var(--ciano); background: rgba(41,224,212,.1); }
+  .idioma small {
+    position: absolute; bottom: -3px; right: -2px;
+    font-size: 8px; font-weight: 800; letter-spacing: -.02em;
+    background: var(--noite-2); color: var(--texto-fraco);
+    padding: 1px 3px; border-radius: 4px; line-height: 1;
+  }
+
+  /* ---------- TOPO ---------- */
+  header {
+    position: sticky; top: 0; z-index: 30;
+    background: rgba(6,11,26,.8);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--linha);
+    padding: 13px 20px 13px 58px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .marca { display: flex; align-items: center; gap: 10px; }
+  .logo-mark {
+    width: 30px; height: 30px; border-radius: 9px;
+    background: var(--grad);
+    position: relative; flex-shrink: 0;
+    box-shadow: 0 4px 14px rgba(19,97,240,.5);
+  }
+  .logo-mark::after {
+    content: ""; position: absolute; inset: 8px;
+    border-radius: 4px;
+    background: var(--noite);
+    clip-path: polygon(0 0, 100% 0, 0 100%);
+    opacity: .85;
+  }
+  .marca b { font-size: 21px; font-weight: 800; letter-spacing: -0.03em; }
+  .marca .tag { font-size: 11px; color: var(--ciano); font-weight: 600; }
+  .btn-carteira {
+    background: var(--grad); color: #fff; border: none;
+    padding: 10px 17px; border-radius: 11px;
+    font-weight: 700; font-size: 14px; cursor: pointer;
+    font-family: inherit; transition: transform .1s, box-shadow .15s;
+    box-shadow: 0 4px 16px rgba(19,97,240,.4);
+    white-space: nowrap;
+  }
+  .btn-carteira:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(19,97,240,.55); }
+  .btn-carteira.conectado {
+    background: rgba(255,255,255,.08); box-shadow: none;
+    border: 1px solid var(--linha-2); font-size: 13px;
+  }
+
+  /* ---------- HERO / TESE ---------- */
+  .tese { position: relative; z-index: 1; padding: 42px 20px 30px 58px; text-align: center; }
+  .tese .selo-rede {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 12px; color: var(--ciano); font-weight: 600;
+    background: rgba(41,224,212,.08); border: 1px solid rgba(41,224,212,.2);
+    padding: 5px 13px; border-radius: 20px; margin-bottom: 18px;
+  }
+  .selo-rede .ponto { width: 7px; height: 7px; border-radius: 50%; background: var(--menta); box-shadow: 0 0 8px var(--menta); animation: pisca 2s infinite; }
+  @keyframes pisca { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .tese h1 {
+    font-size: clamp(28px, 7vw, 44px); font-weight: 800;
+    letter-spacing: -0.035em; line-height: 1.08;
+    max-width: 620px; margin: 0 auto 14px;
+  }
+  .tese h1 .destaque {
+    background: var(--grad); -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .tese p { color: var(--texto-fraco); font-size: 15.5px; max-width: 470px; margin: 0 auto; }
+
+  /* ---------- ABAS ---------- */
+  .abas {
+    display: flex; gap: 4px; position: relative; z-index: 5;
+    background: var(--carta); border: 1px solid var(--linha);
+    border-radius: 14px; padding: 5px;
+    max-width: 640px; margin: 24px auto 0; box-shadow: var(--sombra);
+  }
+  .aba {
+    flex: 1; text-align: center; padding: 11px 8px; border-radius: 10px;
+    font-weight: 600; font-size: 14px; color: var(--texto-fraco);
+    cursor: pointer; border: none; background: transparent; font-family: inherit;
+    transition: all .15s;
+  }
+  .aba:hover { color: var(--texto); }
+  .aba.ativa { background: var(--grad); color: #fff; box-shadow: 0 4px 14px rgba(19,97,240,.35); }
+
+  main { max-width: 640px; margin: 0 auto; padding: 20px 16px 60px; position: relative; z-index: 1; }
+  .cartao {
+    background: linear-gradient(180deg, var(--carta) 0%, var(--carta-2) 100%);
+    border: 1px solid var(--linha); border-radius: var(--raio);
+    padding: 24px; box-shadow: var(--sombra); margin-bottom: 18px;
+  }
+  .cartao h2 { font-size: 18px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.01em; }
+  .cartao .sub { color: var(--texto-fraco); font-size: 13.5px; margin-bottom: 20px; }
+
+  label { display: block; font-size: 13px; font-weight: 600; margin: 16px 0 7px; }
+  .dica { font-weight: 400; color: var(--texto-min); font-size: 12px; }
+  input[type=text], input[type=number], textarea {
+    width: 100%; border: 1.5px solid var(--linha-2); border-radius: 11px;
+    padding: 13px 14px; font-size: 15px; font-family: inherit;
+    background: rgba(0,0,0,.25); color: var(--texto); transition: border-color .15s, box-shadow .15s;
+  }
+  input::placeholder, textarea::placeholder { color: var(--texto-min); }
+  input:focus, textarea:focus { outline: none; border-color: var(--ciano); box-shadow: 0 0 0 3px rgba(41,224,212,.15); }
+  textarea { resize: vertical; min-height: 64px; }
+
+  .valor-linha { display: flex; gap: 10px; }
+  .valor-linha .campo-valor { flex: 1; }
+  .valor-linha input { font-size: 24px; font-weight: 700; }
+
+  .moeda-sel { display: flex; gap: 6px; }
+  .moeda-op {
+    padding: 0 17px; display: flex; align-items: center;
+    border: 1.5px solid var(--linha-2); border-radius: 11px;
+    font-weight: 700; font-size: 14px; cursor: pointer;
+    background: rgba(0,0,0,.2); color: var(--texto-fraco); transition: all .12s;
+  }
+  .moeda-op.sel { border-color: transparent; background: var(--grad); color: #fff; box-shadow: 0 3px 12px rgba(19,97,240,.4); }
+
+  .btn-primario {
+    width: 100%; background: var(--grad); color: #fff; border: none;
+    padding: 15px; border-radius: 12px; font-weight: 700; font-size: 15px;
+    cursor: pointer; margin-top: 22px; font-family: inherit;
+    transition: transform .08s, box-shadow .15s; box-shadow: 0 6px 20px rgba(19,97,240,.4);
+  }
+  .btn-primario:hover { box-shadow: 0 8px 26px rgba(19,97,240,.55); transform: translateY(-1px); }
+  .btn-primario:active { transform: translateY(0); }
+  .btn-primario:disabled { background: #2A3556; box-shadow: none; cursor: not-allowed; opacity: .7; }
+  .btn-sec {
+    background: transparent; color: var(--rubro); border: 1.5px solid var(--linha-2);
+    padding: 12px; border-radius: 11px; font-weight: 600; font-size: 14px;
+    cursor: pointer; width: 100%; margin-top: 10px; font-family: inherit; transition: border-color .15s;
+  }
+  .btn-sec:hover { border-color: var(--rubro); }
+
+  /* ---------- SEMAFORO (assinatura) ---------- */
+  .semaforo {
+    display: flex; align-items: center; gap: 14px;
+    padding: 15px 17px; border-radius: 13px; margin: 20px 0 4px;
+    border: 1.5px solid var(--linha-2); background: rgba(0,0,0,.25); transition: all .3s;
+  }
+  .semaforo .luz {
+    width: 15px; height: 15px; border-radius: 50%;
+    background: var(--texto-min); flex-shrink: 0; position: relative; transition: background .3s;
+  }
+  .semaforo .luz::after {
+    content: ""; position: absolute; inset: -6px; border-radius: 50%;
+    background: currentColor; opacity: .2; transform: scale(0); transition: transform .3s;
+  }
+  .semaforo.pronto { border-color: rgba(34,216,155,.5); background: rgba(34,216,155,.08); }
+  .semaforo.pronto .luz { background: var(--menta); color: var(--menta); box-shadow: 0 0 12px var(--menta); }
+  .semaforo.pronto .luz::after { transform: scale(1); }
+  .semaforo.falta { border-color: rgba(255,176,32,.5); background: rgba(255,176,32,.08); }
+  .semaforo.falta .luz { background: var(--ambar); color: var(--ambar); box-shadow: 0 0 12px var(--ambar); }
+  .semaforo.nao { border-color: rgba(255,92,108,.5); background: rgba(255,92,108,.08); }
+  .semaforo.nao .luz { background: var(--rubro); color: var(--rubro); box-shadow: 0 0 12px var(--rubro); }
+  .semaforo.checando .luz { animation: pulsa 1s infinite; }
+  @keyframes pulsa { 0%,100%{opacity:1} 50%{opacity:.3} }
+  .semaforo .txt b { display: block; font-size: 14.5px; font-weight: 700; }
+  .semaforo .txt small { color: var(--texto-fraco); font-size: 12.5px; }
+
+  /* ---------- LINK + QR ---------- */
+  .link-box {
+    margin-top: 20px; padding: 18px; border: 1.5px solid rgba(41,224,212,.35);
+    border-radius: 13px; background: rgba(41,224,212,.06); display: none;
+  }
+  .link-box.mostra { display: block; animation: surge .3s ease; }
+  @keyframes surge { from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:translateY(0)} }
+  .link-box .rotulo { font-size: 12px; font-weight: 700; color: var(--ciano); text-transform: uppercase; letter-spacing: .05em; }
+  .qr-wrap { display: flex; gap: 16px; align-items: center; margin: 12px 0; }
+  #qrcode { background: #fff; padding: 8px; border-radius: 10px; flex-shrink: 0; line-height: 0; }
+  #qrcode img, #qrcode canvas { display: block; }
+  .qr-lado { flex: 1; min-width: 0; }
+  .link-box .url {
+    font-size: 12.5px; word-break: break-all; background: rgba(0,0,0,.3);
+    border: 1px solid var(--linha-2); border-radius: 8px; padding: 10px; margin-bottom: 10px;
+    font-family: ui-monospace, Menlo, monospace; color: var(--ciano);
+  }
+  .link-acoes { display: flex; gap: 8px; }
+  .link-acoes button {
+    flex: 1; padding: 10px; border-radius: 9px; border: none;
+    font-weight: 700; font-size: 13px; cursor: pointer; font-family: inherit;
+  }
+  .copiar { background: var(--grad); color: #fff; }
+  .abrir { background: rgba(255,255,255,.08); color: var(--texto); border: 1px solid var(--linha-2) !important; }
+
+  /* ---------- DETALHE COBRANCA ---------- */
+  .cob-cabec { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .cob-valor { font-size: 38px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+  .cob-valor small { font-size: 16px; color: var(--texto-fraco); font-weight: 600; margin-left: 5px; }
+  .selo { font-size: 11px; font-weight: 700; padding: 5px 11px; border-radius: 20px; text-transform: uppercase; letter-spacing: .03em; white-space: nowrap; }
+  .selo.aberta { background: rgba(19,97,240,.18); color: #6EA0FF; }
+  .selo.paga { background: rgba(34,216,155,.16); color: var(--menta); }
+  .selo.cancelada { background: rgba(255,255,255,.08); color: var(--texto-min); }
+  .cob-desc { margin: 16px 0; padding: 14px; background: rgba(0,0,0,.25); border-radius: 11px; font-size: 14px; }
+  .cob-desc .k { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--texto-min); font-weight: 700; margin-bottom: 3px; }
+  .cob-meta { font-size: 12px; color: var(--texto-fraco); word-break: break-all; }
+
+  /* ---------- HISTORICO ---------- */
+  .lista-vazia { text-align: center; padding: 32px 16px; color: var(--texto-fraco); }
+  .lista-vazia b { display: block; color: var(--texto); margin-bottom: 4px; }
+  .item { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--linha); cursor: pointer; transition: opacity .15s; }
+  .item:hover { opacity: .8; }
+  .item:last-child { border-bottom: none; }
+  .item .id { font-size: 12px; font-weight: 700; color: var(--texto-min); width: 36px; }
+  .item .info { flex: 1; min-width: 0; }
+  .item .info b { font-size: 14px; }
+  .item .info small { display: block; color: var(--texto-fraco); font-size: 12px; }
+  .item .v { font-weight: 700; font-size: 14px; text-align: right; }
+
+  .aviso { padding: 13px 15px; border-radius: 11px; font-size: 13.5px; margin: 15px 0; display: none; }
+  .aviso.mostra { display: block; }
+  .aviso.erro { background: rgba(255,92,108,.12); color: #FF8B96; border: 1px solid rgba(255,92,108,.3); }
+  .aviso.ok { background: rgba(34,216,155,.12); color: var(--menta); border: 1px solid rgba(34,216,155,.3); }
+  .aviso.info { background: rgba(19,97,240,.12); color: #6EA0FF; border: 1px solid rgba(19,97,240,.3); }
+
+  .toast {
+    position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(90px);
+    background: var(--carta); border: 1px solid var(--linha-2); color: #fff;
+    padding: 13px 22px; border-radius: 13px; font-size: 14px; font-weight: 600;
+    box-shadow: 0 12px 34px rgba(0,0,0,.5); transition: transform .3s; z-index: 60; max-width: 90vw; text-align: center;
+  }
+  .toast.mostra { transform: translateX(-50%) translateY(0); }
+
+  .rodape { text-align: center; padding: 22px 20px 30px; color: var(--texto-min); font-size: 12px; position: relative; z-index: 1; }
+  .rodape a { color: var(--texto-fraco); text-decoration: none; }
+  .rodape a:hover { color: var(--ciano); }
+
+  .oculto { display: none !important; }
+  .spin { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: girar .7s linear infinite; vertical-align: -2px; margin-right: 7px; }
+  @keyframes girar { to { transform: rotate(360deg); } }
+
+  @media (max-width: 480px) {
+    .idiomas { flex-direction: row; top: auto; bottom: 0; left: 50%; transform: translateX(-50%); border-radius: 14px 14px 0 0; border-left: 1px solid var(--linha); border-bottom: none; }
+    header, .tese { padding-left: 20px; }
+    .tese { padding-top: 34px; }
+    .qr-wrap { flex-direction: column; align-items: stretch; }
+    #qrcode { align-self: center; }
+    main { padding-bottom: 90px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- BARRA DE IDIOMAS -->
+<div class="idiomas" id="idiomas">
+  <button class="idioma ativo" data-lang="pt" title="Portugues">🇧🇷<small>PT</small></button>
+  <button class="idioma" data-lang="en" title="English">🇺🇸<small>EN</small></button>
+  <button class="idioma" data-lang="es" title="Espanol">🇪🇸<small>ES</small></button>
+  <button class="idioma" data-lang="fr" title="Francais">🇫🇷<small>FR</small></button>
+</div>
+
+<header>
+  <div class="marca">
+    <div class="logo-mark"></div>
+    <div>
+      <b>Quita</b>
+      <span class="tag" data-i18n="rede_tag"> · Arc Testnet</span>
+    </div>
+  </div>
+  <button class="btn-carteira" id="btnCarteira" data-i18n="conectar">Conectar carteira</button>
+</header>
+
+<section class="tese">
+  <div class="selo-rede"><span class="ponto"></span><span data-i18n="rede_ativa">Rede Arc ativa · liquidacao instantanea</span></div>
+  <h1 data-i18n="hero_titulo">Cobre em stablecoin com <span class="destaque">certeza</span> antes de pagar.</h1>
+  <p data-i18n="hero_sub">Crie uma cobranca, compartilhe o link. O pagador ve se pode pagar antes de gastar gas — e a liquidacao cai direto na sua carteira.</p>
+</section>
+
+<div class="abas">
+  <button class="aba ativa" data-aba="cobrar" data-i18n="aba_cobrar">Criar cobranca</button>
+  <button class="aba" data-aba="pagar" data-i18n="aba_pagar">Pagar</button>
+  <button class="aba" data-aba="historico" data-i18n="aba_hist">Minhas cobrancas</button>
+</div>
+
+<main>
+
+  <!-- COBRAR -->
+  <div id="painel-cobrar">
+    <div class="cartao">
+      <h2 data-i18n="nova_titulo">Nova cobranca</h2>
+      <p class="sub" data-i18n="nova_sub">Voce recebe direto na sua carteira. O contrato nunca guarda o dinheiro.</p>
+
+      <label data-i18n="valor">Valor</label>
+      <div class="valor-linha">
+        <div class="campo-valor">
+          <input type="number" id="inValor" class="num" placeholder="0.00" min="0" step="0.01" inputmode="decimal" />
+        </div>
+        <div class="moeda-sel">
+          <div class="moeda-op sel" data-moeda="0">USDC</div>
+          <div class="moeda-op" data-moeda="1">EURC</div>
+        </div>
+      </div>
+
+      <label><span data-i18n="descricao">Descricao</span> <span class="dica" data-i18n="ate200">(ate 200 caracteres)</span></label>
+      <input type="text" id="inDesc" maxlength="200" data-i18n-ph="ph_desc" placeholder="Ex.: Consultoria de outubro" />
+
+      <button class="btn-primario" id="btnCriar" data-i18n="btn_criar">Criar cobranca</button>
+      <div class="aviso" id="avisoCriar"></div>
+
+      <div class="link-box" id="linkBox">
+        <div class="rotulo" data-i18n="link_rotulo">Cobranca criada — compartilhe</div>
+        <div class="qr-wrap">
+          <div id="qrcode"></div>
+          <div class="qr-lado">
+            <div class="url" id="linkUrl"></div>
+            <div class="link-acoes">
+              <button class="copiar" id="btnCopiar" data-i18n="btn_copiar">Copiar link</button>
+              <button class="abrir" id="btnAbrir" data-i18n="btn_abrir">Abrir</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGAR -->
+  <div id="painel-pagar" class="oculto">
+    <div class="cartao">
+      <h2 data-i18n="pagar_titulo">Pagar uma cobranca</h2>
+      <p class="sub" data-i18n="pagar_sub">Cole o numero da cobranca ou abra por um link recebido.</p>
+
+      <label data-i18n="num_cobranca">Numero da cobranca</label>
+      <div style="display:flex;gap:8px;">
+        <input type="number" id="inIdPagar" placeholder="Ex.: 1" min="1" style="flex:1" />
+        <button class="btn-carteira" id="btnBuscar" data-i18n="btn_buscar">Buscar</button>
+      </div>
+
+      <div id="detCobranca" class="oculto" style="margin-top:22px;">
+        <div class="cob-cabec">
+          <div class="cob-valor num" id="detValor">—</div>
+          <div class="selo aberta" id="detSelo">—</div>
+        </div>
+        <div class="cob-desc">
+          <div class="k" data-i18n="descricao">Descricao</div>
+          <div id="detDesc">—</div>
+        </div>
+        <div class="cob-meta" id="detRecebedor"></div>
+
+        <div class="semaforo checando" id="semaforo">
+          <div class="luz"></div>
+          <div class="txt">
+            <b id="semTitulo" data-i18n="sem_check">Verificando...</b>
+            <small id="semDetalhe" data-i18n="sem_check_d">Consultando saldo e aprovacao na Arc</small>
+          </div>
+        </div>
+
+        <label><span data-i18n="mensagem">Mensagem</span> <span class="dica" data-i18n="ate140">(gravada on-chain, ate 140 caracteres)</span></label>
+        <textarea id="inMemo" maxlength="140" data-i18n-ph="ph_memo" placeholder="Ex.: Pagamento referente a NF 032"></textarea>
+
+        <button class="btn-primario" id="btnAprovar" data-i18n="btn_aprovar">Aprovar token</button>
+        <button class="btn-primario oculto" id="btnPagar" data-i18n="btn_pagar">Pagar agora</button>
+        <button class="btn-sec oculto" id="btnCancelar" data-i18n="btn_cancelar">Cancelar esta cobranca</button>
+        <div class="aviso" id="avisoPagar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORICO -->
+  <div id="painel-historico" class="oculto">
+    <div class="cartao">
+      <h2 data-i18n="hist_emit">Cobrancas que emiti</h2>
+      <p class="sub" data-i18n="hist_emit_sub">As cobrancas criadas por esta carteira.</p>
+      <div id="listaEmitidas"><div class="lista-vazia"><b data-i18n="conecte">Conecte a carteira</b><span data-i18n="conecte_d">para ver suas cobrancas.</span></div></div>
+    </div>
+    <div class="cartao">
+      <h2 data-i18n="hist_pag">Cobrancas que paguei</h2>
+      <p class="sub" data-i18n="hist_pag_sub">Pagamentos feitos por esta carteira.</p>
+      <div id="listaPagas"><div class="lista-vazia"><b data-i18n="nada">Nada por aqui ainda</b><span data-i18n="nada_d">Pagamentos aparecem apos confirmados.</span></div></div>
+    </div>
+  </div>
+
+</main>
+
+<div class="rodape">
+  <span data-i18n="rodape">Contrato verificado</span>:
+  <a id="linkContrato" href="#" target="_blank" rel="noopener">0xF197…28D7</a>
+  · Arc Testnet
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ======================================================================
+//  QUITA v2 — frontend
+// ======================================================================
+const CONTRATO = "0xF1979d37646266f3C5C2c250F0F8798D6E0f28D7";
+const USDC = "0x3600000000000000000000000000000000000000";
+const EURC = "0x89B50855Aa3bE2F677cD6303Cec089B5F319D72a";
+const CHAIN_ID = 5042002;
+const CHAIN_HEX = "0x4CEF52"; // 5042002
+const RPC = "https://rpc.testnet.arc.network";
+const EXPLORER = "https://testnet.arcscan.app";
+const DECIMAIS = 6;
+
+const ABI_QUITA = [
+  "function criarCobranca(uint256 valor, uint8 moeda, string descricao) returns (uint256 id)",
+  "function pagar(uint256 id, string memo)",
+  "function cancelar(uint256 id)",
+  "function totalCobrancas() view returns (uint256)",
+  "function podePagar(uint256 id, address pagador) view returns (bool ok, string motivo)",
+  "function cobrancasEmitidas(address de) view returns (uint256[])",
+  "function cobrancasPagas(address de) view returns (uint256[])",
+  "function consultar(uint256 id) view returns (tuple(uint256 id, address recebedor, address pagador, uint256 valor, uint8 moeda, uint8 status, string descricao, string memo, uint256 criadaEm, uint256 pagaEm))"
+];
+const ABI_ERC20 = [
+  "function approve(address spender, uint256 amount) returns (bool)",
+  "function allowance(address dono, address gastador) view returns (uint256)",
+  "function balanceOf(address dono) view returns (uint256)"
+];
+
+// ---------- i18n ----------
+const I18N = {
+  pt: {
+    conectar:"Conectar carteira", rede_tag:" · Arc Testnet", rede_ativa:"Rede Arc ativa · liquidacao instantanea",
+    hero_titulo:'Cobre em stablecoin com <span class="destaque">certeza</span> antes de pagar.',
+    hero_sub:"Crie uma cobranca, compartilhe o link. O pagador ve se pode pagar antes de gastar gas — e a liquidacao cai direto na sua carteira.",
+    aba_cobrar:"Criar cobranca", aba_pagar:"Pagar", aba_hist:"Minhas cobrancas",
+    nova_titulo:"Nova cobranca", nova_sub:"Voce recebe direto na sua carteira. O contrato nunca guarda o dinheiro.",
+    valor:"Valor", descricao:"Descricao", ate200:"(ate 200 caracteres)", ph_desc:"Ex.: Consultoria de outubro",
+    btn_criar:"Criar cobranca", link_rotulo:"Cobranca criada — compartilhe", btn_copiar:"Copiar link", btn_abrir:"Abrir",
+    pagar_titulo:"Pagar uma cobranca", pagar_sub:"Cole o numero da cobranca ou abra por um link recebido.",
+    num_cobranca:"Numero da cobranca", btn_buscar:"Buscar",
+    sem_check:"Verificando...", sem_check_d:"Consultando saldo e aprovacao na Arc",
+    mensagem:"Mensagem", ate140:"(gravada on-chain, ate 140 caracteres)", ph_memo:"Ex.: Pagamento referente a NF 032",
+    btn_aprovar:"Aprovar token", btn_pagar:"Pagar agora", btn_cancelar:"Cancelar esta cobranca",
+    hist_emit:"Cobrancas que emiti", hist_emit_sub:"As cobrancas criadas por esta carteira.",
+    hist_pag:"Cobrancas que paguei", hist_pag_sub:"Pagamentos feitos por esta carteira.",
+    conecte:"Conecte a carteira", conecte_d:"para ver suas cobrancas.", nada:"Nada por aqui ainda", nada_d:"Pagamentos aparecem apos confirmados.",
+    rodape:"Contrato verificado",
+    st_aberta:"Aberta", st_paga:"Paga", st_cancelada:"Cancelada",
+    sem_pronto:"Pronto para pagar", sem_pronto_d:"Saldo e aprovacao conferidos. E so confirmar.",
+    sem_falta:"Falta aprovar o token", sem_falta_d:"Voce tem saldo, mas precisa liberar o TOKEN uma vez.",
+    sem_conecte:"Conecte a carteira", sem_conecte_d:"Preciso da sua carteira para checar saldo e aprovacao",
+    sem_sua:"Esta cobranca e sua", sem_sua_d:"Voce nao pode pagar a si mesmo, mas pode cancela-la",
+    sem_paga:"Cobranca paga", sem_cancel:"Cobranca cancelada", sem_cancel_d:"Esta cobranca foi cancelada pelo recebedor",
+    recebedor:"Recebedor", t_conectada:"Carteira conectada", t_criada:"Cobranca criada", t_copiado:"Link copiado",
+    t_aprovado:"Token aprovado", t_pago:"Pago com sucesso", t_cancelada:"Cobranca cancelada", t_semcart:"Nenhuma carteira detectada",
+    err_valor:"Informe um valor maior que zero.", err_desc:"Escreva uma descricao para a cobranca.",
+    err_valorinv:"Valor invalido. Use no maximo 6 casas decimais.",
+    info_enviada:"Transacao enviada. Aguardando confirmacao...", ok_pago:"Pagamento confirmado! O valor caiu direto na carteira do recebedor.",
+    nao_achou:"Cobranca nao encontrada.", vazio_emit:"Voce ainda nao criou cobrancas", vazio_pag:"Voce ainda nao pagou cobrancas",
+    liquidada:"Liquidada em", ver_tx:"Ver transacao", tx_criada:"Cobranca criada on-chain", tx_paga:"Pagamento confirmado on-chain", tx_aprov:"Aprovacao confirmada", tx_cancel:"Cancelamento confirmado"
+  },
+  en: {
+    conectar:"Connect wallet", rede_tag:" · Arc Testnet", rede_ativa:"Arc network live · instant settlement",
+    hero_titulo:'Bill in stablecoin with <span class="destaque">certainty</span> before paying.',
+    hero_sub:"Create a request, share the link. The payer sees if they can pay before spending gas — and settlement lands straight in your wallet.",
+    aba_cobrar:"New request", aba_pagar:"Pay", aba_hist:"My requests",
+    nova_titulo:"New request", nova_sub:"You receive it straight to your wallet. The contract never holds funds.",
+    valor:"Amount", descricao:"Description", ate200:"(up to 200 characters)", ph_desc:"e.g. October consulting",
+    btn_criar:"Create request", link_rotulo:"Request created — share it", btn_copiar:"Copy link", btn_abrir:"Open",
+    pagar_titulo:"Pay a request", pagar_sub:"Paste the request number or open via a received link.",
+    num_cobranca:"Request number", btn_buscar:"Search",
+    sem_check:"Checking...", sem_check_d:"Reading balance and approval on Arc",
+    mensagem:"Message", ate140:"(recorded on-chain, up to 140 characters)", ph_memo:"e.g. Payment for invoice 032",
+    btn_aprovar:"Approve token", btn_pagar:"Pay now", btn_cancelar:"Cancel this request",
+    hist_emit:"Requests I issued", hist_emit_sub:"Requests created by this wallet.",
+    hist_pag:"Requests I paid", hist_pag_sub:"Payments made by this wallet.",
+    conecte:"Connect the wallet", conecte_d:"to see your requests.", nada:"Nothing here yet", nada_d:"Payments show up after confirmation.",
+    rodape:"Verified contract",
+    st_aberta:"Open", st_paga:"Paid", st_cancelada:"Canceled",
+    sem_pronto:"Ready to pay", sem_pronto_d:"Balance and approval checked. Just confirm.",
+    sem_falta:"Token approval needed", sem_falta_d:"You have balance, but must approve TOKEN once.",
+    sem_conecte:"Connect the wallet", sem_conecte_d:"I need your wallet to check balance and approval",
+    sem_sua:"This request is yours", sem_sua_d:"You can't pay yourself, but you can cancel it",
+    sem_paga:"Request paid", sem_cancel:"Request canceled", sem_cancel_d:"This request was canceled by the receiver",
+    recebedor:"Receiver", t_conectada:"Wallet connected", t_criada:"Request created", t_copiado:"Link copied",
+    t_aprovado:"Token approved", t_pago:"Paid successfully", t_cancelada:"Request canceled", t_semcart:"No wallet detected",
+    err_valor:"Enter an amount greater than zero.", err_desc:"Write a description for the request.",
+    err_valorinv:"Invalid amount. Use at most 6 decimals.",
+    info_enviada:"Transaction sent. Waiting for confirmation...", ok_pago:"Payment confirmed! Funds landed straight in the receiver's wallet.",
+    nao_achou:"Request not found.", vazio_emit:"You haven't created requests yet", vazio_pag:"You haven't paid requests yet",
+    liquidada:"Settled in", ver_tx:"View transaction", tx_criada:"Request created on-chain", tx_paga:"Payment confirmed on-chain", tx_aprov:"Approval confirmed", tx_cancel:"Cancellation confirmed"
+  },
+  es: {
+    conectar:"Conectar billetera", rede_tag:" · Arc Testnet", rede_ativa:"Red Arc activa · liquidacion instantanea",
+    hero_titulo:'Cobra en stablecoin con <span class="destaque">certeza</span> antes de pagar.',
+    hero_sub:"Crea un cobro, comparte el enlace. El pagador ve si puede pagar antes de gastar gas — y la liquidacion llega directo a tu billetera.",
+    aba_cobrar:"Nuevo cobro", aba_pagar:"Pagar", aba_hist:"Mis cobros",
+    nova_titulo:"Nuevo cobro", nova_sub:"Recibes directo en tu billetera. El contrato nunca guarda el dinero.",
+    valor:"Monto", descricao:"Descripcion", ate200:"(hasta 200 caracteres)", ph_desc:"Ej.: Consultoria de octubre",
+    btn_criar:"Crear cobro", link_rotulo:"Cobro creado — compartelo", btn_copiar:"Copiar enlace", btn_abrir:"Abrir",
+    pagar_titulo:"Pagar un cobro", pagar_sub:"Pega el numero del cobro o abre con un enlace recibido.",
+    num_cobranca:"Numero del cobro", btn_buscar:"Buscar",
+    sem_check:"Verificando...", sem_check_d:"Consultando saldo y aprobacion en Arc",
+    mensagem:"Mensaje", ate140:"(grabado on-chain, hasta 140 caracteres)", ph_memo:"Ej.: Pago de factura 032",
+    btn_aprovar:"Aprobar token", btn_pagar:"Pagar ahora", btn_cancelar:"Cancelar este cobro",
+    hist_emit:"Cobros que emiti", hist_emit_sub:"Cobros creados por esta billetera.",
+    hist_pag:"Cobros que pague", hist_pag_sub:"Pagos hechos por esta billetera.",
+    conecte:"Conecta la billetera", conecte_d:"para ver tus cobros.", nada:"Nada por aqui aun", nada_d:"Los pagos aparecen tras confirmarse.",
+    rodape:"Contrato verificado",
+    st_aberta:"Abierto", st_paga:"Pagado", st_cancelada:"Cancelado",
+    sem_pronto:"Listo para pagar", sem_pronto_d:"Saldo y aprobacion verificados. Solo confirma.",
+    sem_falta:"Falta aprobar el token", sem_falta_d:"Tienes saldo, pero debes liberar el TOKEN una vez.",
+    sem_conecte:"Conecta la billetera", sem_conecte_d:"Necesito tu billetera para revisar saldo y aprobacion",
+    sem_sua:"Este cobro es tuyo", sem_sua_d:"No puedes pagarte a ti mismo, pero puedes cancelarlo",
+    sem_paga:"Cobro pagado", sem_cancel:"Cobro cancelado", sem_cancel_d:"Este cobro fue cancelado por el receptor",
+    recebedor:"Receptor", t_conectada:"Billetera conectada", t_criada:"Cobro creado", t_copiado:"Enlace copiado",
+    t_aprovado:"Token aprobado", t_pago:"Pagado con exito", t_cancelada:"Cobro cancelado", t_semcart:"Ninguna billetera detectada",
+    err_valor:"Ingresa un monto mayor que cero.", err_desc:"Escribe una descripcion para el cobro.",
+    err_valorinv:"Monto invalido. Usa maximo 6 decimales.",
+    info_enviada:"Transaccion enviada. Esperando confirmacion...", ok_pago:"Pago confirmado! El valor llego directo a la billetera del receptor.",
+    nao_achou:"Cobro no encontrado.", vazio_emit:"Aun no has creado cobros", vazio_pag:"Aun no has pagado cobros",
+    liquidada:"Liquidado en", ver_tx:"Ver transaccion", tx_criada:"Cobro creado on-chain", tx_paga:"Pago confirmado on-chain", tx_aprov:"Aprobacion confirmada", tx_cancel:"Cancelacion confirmada"
+  },
+  fr: {
+    conectar:"Connecter le portefeuille", rede_tag:" · Arc Testnet", rede_ativa:"Reseau Arc actif · reglement instantane",
+    hero_titulo:'Facturez en stablecoin avec <span class="destaque">certitude</span> avant de payer.',
+    hero_sub:"Creez une demande, partagez le lien. Le payeur voit s'il peut payer avant de depenser du gas — et le reglement arrive direct dans votre portefeuille.",
+    aba_cobrar:"Nouvelle demande", aba_pagar:"Payer", aba_hist:"Mes demandes",
+    nova_titulo:"Nouvelle demande", nova_sub:"Vous recevez direct dans votre portefeuille. Le contrat ne garde jamais les fonds.",
+    valor:"Montant", descricao:"Description", ate200:"(jusqu'a 200 caracteres)", ph_desc:"Ex.: Conseil d'octobre",
+    btn_criar:"Creer la demande", link_rotulo:"Demande creee — partagez", btn_copiar:"Copier le lien", btn_abrir:"Ouvrir",
+    pagar_titulo:"Payer une demande", pagar_sub:"Collez le numero de la demande ou ouvrez via un lien recu.",
+    num_cobranca:"Numero de la demande", btn_buscar:"Chercher",
+    sem_check:"Verification...", sem_check_d:"Lecture du solde et de l'approbation sur Arc",
+    mensagem:"Message", ate140:"(enregistre on-chain, jusqu'a 140 caracteres)", ph_memo:"Ex.: Paiement facture 032",
+    btn_aprovar:"Approuver le token", btn_pagar:"Payer maintenant", btn_cancelar:"Annuler cette demande",
+    hist_emit:"Demandes emises", hist_emit_sub:"Demandes creees par ce portefeuille.",
+    hist_pag:"Demandes payees", hist_pag_sub:"Paiements faits par ce portefeuille.",
+    conecte:"Connectez le portefeuille", conecte_d:"pour voir vos demandes.", nada:"Rien ici pour l'instant", nada_d:"Les paiements apparaissent apres confirmation.",
+    rodape:"Contrat verifie",
+    st_aberta:"Ouverte", st_paga:"Payee", st_cancelada:"Annulee",
+    sem_pronto:"Pret a payer", sem_pronto_d:"Solde et approbation verifies. Il suffit de confirmer.",
+    sem_falta:"Approbation du token requise", sem_falta_d:"Vous avez le solde, mais devez autoriser le TOKEN une fois.",
+    sem_conecte:"Connectez le portefeuille", sem_conecte_d:"J'ai besoin de votre portefeuille pour verifier solde et approbation",
+    sem_sua:"Cette demande est la votre", sem_sua_d:"Vous ne pouvez pas vous payer, mais vous pouvez l'annuler",
+    sem_paga:"Demande payee", sem_cancel:"Demande annulee", sem_cancel_d:"Cette demande a ete annulee par le beneficiaire",
+    recebedor:"Beneficiaire", t_conectada:"Portefeuille connecte", t_criada:"Demande creee", t_copiado:"Lien copie",
+    t_aprovado:"Token approuve", t_pago:"Paye avec succes", t_cancelada:"Demande annulee", t_semcart:"Aucun portefeuille detecte",
+    err_valor:"Entrez un montant superieur a zero.", err_desc:"Ecrivez une description pour la demande.",
+    err_valorinv:"Montant invalide. Utilisez au maximum 6 decimales.",
+    info_enviada:"Transaction envoyee. En attente de confirmation...", ok_pago:"Paiement confirme! Les fonds sont arrives direct dans le portefeuille du beneficiaire.",
+    nao_achou:"Demande introuvable.", vazio_emit:"Vous n'avez pas encore cree de demandes", vazio_pag:"Vous n'avez pas encore paye de demandes",
+    liquidada:"Regle en", ver_tx:"Voir la transaction", tx_criada:"Demande creee on-chain", tx_paga:"Paiement confirme on-chain", tx_aprov:"Approbation confirmee", tx_cancel:"Annulation confirmee"
+  }
+};
+let lang = "pt";
+const t = (k) => (I18N[lang] && I18N[lang][k]) || I18N.pt[k] || k;
+
+function aplicarIdioma() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    el.innerHTML = t(el.dataset.i18n);
+  });
+  document.querySelectorAll("[data-i18n-ph]").forEach(el => {
+    el.placeholder = t(el.dataset.i18nPh);
+  });
+  // re-render dinamico
+  if (cobrancaAtual && !$("detCobranca").classList.contains("oculto")) buscarCobranca();
+  if (conta) carregarHistorico();
+}
+
+document.querySelectorAll(".idioma").forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll(".idioma").forEach(x => x.classList.remove("ativo"));
+    b.classList.add("ativo");
+    lang = b.dataset.lang;
+    aplicarIdioma();
+  };
+});
+
+// ---------- estado ----------
+let provider, signer, conta, quita, quitaRO;
+let moedaSel = 0;
+let cobrancaAtual = null;
+
+const $ = (id) => document.getElementById(id);
+const nomeMoeda = (m) => Number(m) === 0 ? "USDC" : "EURC";
+const endMoeda = (m) => Number(m) === 0 ? USDC : EURC;
+const fmt = (v) => ethers.utils.formatUnits(v, DECIMAIS);
+const curto = (a) => a ? a.slice(0,6)+"…"+a.slice(-4) : "";
+
+document.getElementById("linkContrato").href = EXPLORER + "/address/" + CONTRATO;
+
+function toast(msg){ const el=$("toast"); el.textContent=msg; el.classList.add("mostra"); setTimeout(()=>el.classList.remove("mostra"),2600); }
+function aviso(el,tipo,msg){ el.className="aviso mostra "+tipo; el.innerHTML=msg; }
+function limpaAviso(el){ el.className="aviso"; el.innerHTML=""; }
+// link clicavel para o hash da transacao no explorer da Arc
+function linkTx(hash){
+  const curtinho = hash.slice(0,10)+"…"+hash.slice(-8);
+  return '<a href="'+EXPLORER+'/tx/'+hash+'" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;">'+curtinho+'</a>';
+}
+
+function iniciaLeitura(){ const p=new ethers.providers.JsonRpcProvider(RPC); quitaRO=new ethers.Contract(CONTRATO,ABI_QUITA,p); }
+iniciaLeitura();
+
+// ---------- carteira ----------
+async function conectar(){
+  if(!window.ethereum){ toast(t("t_semcart")); return; }
+  try{
+    provider=new ethers.providers.Web3Provider(window.ethereum,"any");
+    await provider.send("eth_requestAccounts",[]);
+    const rede=await provider.getNetwork();
+    if(rede.chainId!==CHAIN_ID){ await trocarRede(); provider=new ethers.providers.Web3Provider(window.ethereum,"any"); }
+    signer=provider.getSigner();
+    conta=await signer.getAddress();
+    quita=new ethers.Contract(CONTRATO,ABI_QUITA,signer);
+    const b=$("btnCarteira"); b.textContent=curto(conta); b.classList.add("conectado");
+    window.ethereum.on("accountsChanged",()=>location.reload());
+    window.ethereum.on("chainChanged",()=>location.reload());
+    toast(t("t_conectada"));
+    carregarHistorico();
+  }catch(e){ console.error(e); toast("x"); }
+}
+async function trocarRede(){
+  try{
+    await window.ethereum.request({method:"wallet_switchEthereumChain",params:[{chainId:CHAIN_HEX}]});
+  }catch(err){
+    if(err.code===4902){
+      await window.ethereum.request({method:"wallet_addEthereumChain",params:[{
+        chainId:CHAIN_HEX, chainName:"Arc Testnet",
+        nativeCurrency:{name:"USDC",symbol:"USDC",decimals:18},
+        rpcUrls:[RPC], blockExplorerUrls:[EXPLORER]
+      }]});
+    } else throw err;
+  }
+}
+$("btnCarteira").onclick=conectar;
+
+// ---------- abas ----------
+document.querySelectorAll(".aba").forEach(a=>{
+  a.onclick=()=>{
+    document.querySelectorAll(".aba").forEach(x=>x.classList.remove("ativa"));
+    a.classList.add("ativa");
+    ["cobrar","pagar","historico"].forEach(n=>$("painel-"+n).classList.toggle("oculto",n!==a.dataset.aba));
+    if(a.dataset.aba==="historico") carregarHistorico();
+  };
+});
+
+// ---------- moeda ----------
+document.querySelectorAll(".moeda-op").forEach(op=>{
+  op.onclick=()=>{ document.querySelectorAll(".moeda-op").forEach(x=>x.classList.remove("sel")); op.classList.add("sel"); moedaSel=Number(op.dataset.moeda); };
+});
+
+// ---------- criar ----------
+$("btnCriar").onclick=async()=>{
+  limpaAviso($("avisoCriar")); $("linkBox").classList.remove("mostra");
+  if(!signer){ await conectar(); if(!signer) return; }
+  const valorTxt=$("inValor").value.trim(); const desc=$("inDesc").value.trim();
+  if(!valorTxt||Number(valorTxt)<=0){ aviso($("avisoCriar"),"erro",t("err_valor")); return; }
+  if(!desc){ aviso($("avisoCriar"),"erro",t("err_desc")); return; }
+  let valorBruto;
+  try{ valorBruto=ethers.utils.parseUnits(valorTxt,DECIMAIS); }catch{ aviso($("avisoCriar"),"erro",t("err_valorinv")); return; }
+  const btn=$("btnCriar"); btn.disabled=true; btn.innerHTML='<span class="spin"></span>...';
+  try{
+    const tx=await quita.criarCobranca(valorBruto,moedaSel,desc);
+    aviso($("avisoCriar"),"info",t("info_enviada"));
+    const rec=await tx.wait();
+    let novoId=null;
+    for(const log of rec.logs){ try{ const p=quita.interface.parseLog(log); if(p.name==="CobrancaCriada"){ novoId=p.args.id.toString(); break; } }catch{} }
+    if(!novoId){ novoId=(await quita.totalCobrancas()).toString(); }
+    const url=location.origin+location.pathname+"?id="+novoId;
+    $("linkUrl").textContent=url;
+    $("qrcode").innerHTML="";
+    new QRCode($("qrcode"),{text:url,width:104,height:104,colorDark:"#0B3FB0",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M});
+    $("linkBox").classList.add("mostra");
+    aviso($("avisoCriar"),"ok",t("tx_criada")+" · "+linkTx(rec.transactionHash));
+    toast(t("t_criada")+" #"+novoId);
+    $("inValor").value=""; $("inDesc").value="";
+  }catch(e){ console.error(e); aviso($("avisoCriar"),"erro","x: "+(e.reason||e.message||"")); }
+  finally{ btn.disabled=false; btn.textContent=t("btn_criar"); }
+};
+$("btnCopiar").onclick=()=>navigator.clipboard.writeText($("linkUrl").textContent).then(()=>toast(t("t_copiado")));
+$("btnAbrir").onclick=()=>{ const id=new URL($("linkUrl").textContent).searchParams.get("id"); irParaPagar(id); };
+
+// ---------- pagar ----------
+function irParaPagar(id){
+  document.querySelectorAll(".aba").forEach(x=>x.classList.remove("ativa"));
+  document.querySelector('[data-aba="pagar"]').classList.add("ativa");
+  ["cobrar","pagar","historico"].forEach(n=>$("painel-"+n).classList.toggle("oculto",n!=="pagar"));
+  $("inIdPagar").value=id; buscarCobranca();
+}
+$("btnBuscar").onclick=buscarCobranca;
+async function buscarCobranca(){
+  const id=$("inIdPagar").value.trim(); limpaAviso($("avisoPagar"));
+  if(!id||Number(id)<1){ toast(t("num_cobranca")); return; }
+  try{
+    const c=await (quita||quitaRO).consultar(id);
+    cobrancaAtual={id,...c}; mostrarCobranca(c);
+  }catch(e){ console.error(e); $("detCobranca").classList.add("oculto"); aviso($("avisoPagar"),"erro","#"+id+" — "+t("nao_achou")); }
+}
+function mostrarCobranca(c){
+  $("detCobranca").classList.remove("oculto");
+  $("detValor").innerHTML=fmt(c.valor)+' <small>'+nomeMoeda(c.moeda)+'</small>';
+  $("detDesc").textContent=c.descricao||"—";
+  $("detRecebedor").textContent=t("recebedor")+": "+curto(c.recebedor);
+  const status=Number(c.status);
+  const selo=$("detSelo"); selo.className="selo "+["aberta","paga","cancelada"][status];
+  selo.textContent=[t("st_aberta"),t("st_paga"),t("st_cancelada")][status];
+  $("btnAprovar").classList.add("oculto"); $("btnPagar").classList.add("oculto"); $("btnCancelar").classList.add("oculto");
+  if(status!==0){
+    setSemaforo(status===1?"pronto":"nao",
+      status===1?t("sem_paga"):t("sem_cancel"),
+      status===1?(t("liquidada")+" "+nomeMoeda(c.moeda)+(c.memo?' — "'+c.memo+'"':"")):t("sem_cancel_d"));
+    return;
+  }
+  avaliarPagamento();
+}
+function setSemaforo(estado,titulo,detalhe){ const s=$("semaforo"); s.className="semaforo "+estado; $("semTitulo").textContent=titulo; $("semDetalhe").textContent=detalhe; }
+async function avaliarPagamento(){
+  if(!cobrancaAtual) return;
+  if(!conta){ setSemaforo("falta",t("sem_conecte"),t("sem_conecte_d")); $("btnAprovar").classList.remove("oculto"); $("btnAprovar").textContent=t("conectar"); return; }
+  if(conta.toLowerCase()===cobrancaAtual.recebedor.toLowerCase()){ setSemaforo("nao",t("sem_sua"),t("sem_sua_d")); $("btnCancelar").classList.remove("oculto"); return; }
+  setSemaforo("checando",t("sem_check"),t("sem_check_d"));
+  try{
+    const [ok,motivo]=await (quita||quitaRO).podePagar(cobrancaAtual.id,conta);
+    if(ok){ setSemaforo("pronto",t("sem_pronto"),t("sem_pronto_d")); $("btnPagar").classList.remove("oculto"); $("btnAprovar").classList.add("oculto"); }
+    else if(/aprovar|approve/i.test(motivo)){
+      setSemaforo("falta",t("sem_falta"),t("sem_falta_d").replace("TOKEN",nomeMoeda(cobrancaAtual.moeda)));
+      $("btnAprovar").classList.remove("oculto"); $("btnAprovar").textContent=t("btn_aprovar")+" "+nomeMoeda(cobrancaAtual.moeda); $("btnPagar").classList.add("oculto");
+    } else { setSemaforo("nao",motivo,""); $("btnAprovar").classList.add("oculto"); $("btnPagar").classList.add("oculto"); }
+  }catch(e){ console.error(e); setSemaforo("nao",t("sem_check"),""); }
+}
+$("btnAprovar").onclick=async()=>{
+  if(!signer){ await conectar(); }
+  if(!signer||!cobrancaAtual) return;
+  if($("btnAprovar").textContent===t("conectar")){ await avaliarPagamento(); return; }
+  const btn=$("btnAprovar"); btn.disabled=true; btn.innerHTML='<span class="spin"></span>...';
+  try{
+    const token=new ethers.Contract(endMoeda(cobrancaAtual.moeda),ABI_ERC20,signer);
+    const tx=await token.approve(CONTRATO,cobrancaAtual.valor);
+    aviso($("avisoPagar"),"info",t("info_enviada")); const rec=await tx.wait();
+    aviso($("avisoPagar"),"ok",t("tx_aprov")+" · "+linkTx(rec.transactionHash)); toast(t("t_aprovado")); await avaliarPagamento();
+  }catch(e){ console.error(e); aviso($("avisoPagar"),"erro","x: "+(e.reason||e.message||"")); }
+  finally{ btn.disabled=false; btn.textContent=t("btn_aprovar")+" "+nomeMoeda(cobrancaAtual.moeda); }
+};
+$("btnPagar").onclick=async()=>{
+  if(!signer||!cobrancaAtual) return;
+  const memo=$("inMemo").value.trim();
+  const btn=$("btnPagar"); btn.disabled=true; btn.innerHTML='<span class="spin"></span>...';
+  try{
+    const tx=await quita.pagar(cobrancaAtual.id,memo);
+    aviso($("avisoPagar"),"info",t("info_enviada")); const rec=await tx.wait();
+    aviso($("avisoPagar"),"ok",t("ok_pago")+"<br>"+t("tx_paga")+" · "+linkTx(rec.transactionHash)); toast(t("t_pago"));
+    await buscarCobranca(); carregarHistorico();
+  }catch(e){ console.error(e); aviso($("avisoPagar"),"erro","x: "+(e.reason||e.message||"")); }
+  finally{ btn.disabled=false; btn.textContent=t("btn_pagar"); }
+};
+$("btnCancelar").onclick=async()=>{
+  if(!signer||!cobrancaAtual) return;
+  const btn=$("btnCancelar"); btn.disabled=true; btn.innerHTML='<span class="spin"></span>...';
+  try{ const tx=await quita.cancelar(cobrancaAtual.id); const rec=await tx.wait(); aviso($("avisoPagar"),"ok",t("tx_cancel")+" · "+linkTx(rec.transactionHash)); toast(t("t_cancelada")); await buscarCobranca(); carregarHistorico(); }
+  catch(e){ console.error(e); aviso($("avisoPagar"),"erro","x: "+(e.reason||e.message||"")); }
+  finally{ btn.disabled=false; btn.textContent=t("btn_cancelar"); }
+};
+
+// ---------- historico ----------
+async function carregarHistorico(){
+  if(!conta) return;
+  try{
+    const [emit,pag]=await Promise.all([quita.cobrancasEmitidas(conta),quita.cobrancasPagas(conta)]);
+    await renderLista("listaEmitidas",emit,t("vazio_emit"));
+    await renderLista("listaPagas",pag,t("vazio_pag"));
+  }catch(e){ console.error(e); }
+}
+async function renderLista(elId,ids,vazioMsg){
+  const el=$(elId);
+  if(!ids||ids.length===0){ el.innerHTML='<div class="lista-vazia"><b>'+vazioMsg+'</b></div>'; return; }
+  const cobs=await Promise.all(ids.map(id=>quita.consultar(id).then(c=>({id:id.toString(),c})).catch(()=>null)));
+  el.innerHTML="";
+  cobs.filter(Boolean).reverse().forEach(({id,c})=>{
+    const status=Number(c.status);
+    const div=document.createElement("div"); div.className="item";
+    div.innerHTML='<div class="id">#'+id+'</div><div class="info"><b>'+(c.descricao||"—")+'</b><small>'+[t("st_aberta"),t("st_paga"),t("st_cancelada")][status]+'</small></div><div class="v num">'+fmt(c.valor)+' '+nomeMoeda(c.moeda)+'</div>';
+    div.onclick=()=>irParaPagar(id);
+    el.appendChild(div);
+  });
+}
+
+// ---------- roteamento por link ----------
+window.addEventListener("load",async()=>{
+  aplicarIdioma();
+  const id=new URLSearchParams(location.search).get("id");
+  if(id){
+    irParaPagar(id);
+    if(window.ethereum&&window.ethereum.selectedAddress){ await conectar(); buscarCobranca(); }
+  }
+});
+</script>
+</body>
+</html>
