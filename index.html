@@ -526,7 +526,7 @@ const I18N = {
     err_valorinv:"Valor invalido. Use no maximo 6 casas decimais.",
     info_enviada:"Transacao enviada. Aguardando confirmacao...", ok_pago:"Pagamento confirmado! O valor caiu direto na carteira do recebedor.",
     nao_achou:"Cobranca nao encontrada.", vazio_emit:"Voce ainda nao criou cobrancas", vazio_pag:"Voce ainda nao pagou cobrancas",
-    liquidada:"Liquidada em", ver_tx:"Ver transacao", tx_criada:"Cobranca criada on-chain", tx_paga:"Pagamento confirmado on-chain", tx_aprov:"Aprovacao confirmada", tx_cancel:"Cancelamento confirmado"
+    sem_erro:"Nao foi possivel verificar", liquidada:"Liquidada em", ver_tx:"Ver transacao", tx_criada:"Cobranca criada on-chain", tx_paga:"Pagamento confirmado on-chain", tx_aprov:"Aprovacao confirmada", tx_cancel:"Cancelamento confirmado"
   },
   en: {
     conectar:"Connect wallet", rede_tag:" · Arc Testnet", rede_ativa:"Arc network live · instant settlement",
@@ -557,7 +557,7 @@ const I18N = {
     err_valorinv:"Invalid amount. Use at most 6 decimals.",
     info_enviada:"Transaction sent. Waiting for confirmation...", ok_pago:"Payment confirmed! Funds landed straight in the receiver's wallet.",
     nao_achou:"Request not found.", vazio_emit:"You haven't created requests yet", vazio_pag:"You haven't paid requests yet",
-    liquidada:"Settled in", ver_tx:"View transaction", tx_criada:"Request created on-chain", tx_paga:"Payment confirmed on-chain", tx_aprov:"Approval confirmed", tx_cancel:"Cancellation confirmed"
+    sem_erro:"Could not verify", liquidada:"Settled in", ver_tx:"View transaction", tx_criada:"Request created on-chain", tx_paga:"Payment confirmed on-chain", tx_aprov:"Approval confirmed", tx_cancel:"Cancellation confirmed"
   },
   es: {
     conectar:"Conectar billetera", rede_tag:" · Arc Testnet", rede_ativa:"Red Arc activa · liquidacion instantanea",
@@ -588,7 +588,7 @@ const I18N = {
     err_valorinv:"Monto invalido. Usa maximo 6 decimales.",
     info_enviada:"Transaccion enviada. Esperando confirmacion...", ok_pago:"Pago confirmado! El valor llego directo a la billetera del receptor.",
     nao_achou:"Cobro no encontrado.", vazio_emit:"Aun no has creado cobros", vazio_pag:"Aun no has pagado cobros",
-    liquidada:"Liquidado en", ver_tx:"Ver transaccion", tx_criada:"Cobro creado on-chain", tx_paga:"Pago confirmado on-chain", tx_aprov:"Aprobacion confirmada", tx_cancel:"Cancelacion confirmada"
+    sem_erro:"No se pudo verificar", liquidada:"Liquidado en", ver_tx:"Ver transaccion", tx_criada:"Cobro creado on-chain", tx_paga:"Pago confirmado on-chain", tx_aprov:"Aprobacion confirmada", tx_cancel:"Cancelacion confirmada"
   },
   fr: {
     conectar:"Connecter le portefeuille", rede_tag:" · Arc Testnet", rede_ativa:"Reseau Arc actif · reglement instantane",
@@ -619,7 +619,7 @@ const I18N = {
     err_valorinv:"Montant invalide. Utilisez au maximum 6 decimales.",
     info_enviada:"Transaction envoyee. En attente de confirmation...", ok_pago:"Paiement confirme! Les fonds sont arrives direct dans le portefeuille du beneficiaire.",
     nao_achou:"Demande introuvable.", vazio_emit:"Vous n'avez pas encore cree de demandes", vazio_pag:"Vous n'avez pas encore paye de demandes",
-    liquidada:"Regle en", ver_tx:"Voir la transaction", tx_criada:"Demande creee on-chain", tx_paga:"Paiement confirme on-chain", tx_aprov:"Approbation confirmee", tx_cancel:"Annulation confirmee"
+    sem_erro:"Verification impossible", liquidada:"Regle en", ver_tx:"Voir la transaction", tx_criada:"Demande creee on-chain", tx_paga:"Paiement confirme on-chain", tx_aprov:"Approbation confirmee", tx_cancel:"Annulation confirmee"
   }
 };
 let lang = "pt";
@@ -671,6 +671,20 @@ function linkTx(hash){
 
 function iniciaLeitura(){ const p=new ethers.providers.JsonRpcProvider(RPC); quitaRO=new ethers.Contract(CONTRATO,ABI_QUITA,p); }
 iniciaLeitura();
+
+/* Leitura sempre pelo RPC publico da Arc.
+   Motivo: o provider da carteira (Rabby/MetaMask) impoe limite de requisicoes
+   ("request limit reached") e derruba consultas encadeadas como podePagar.
+   Se o RPC publico falhar, cai para o provider da carteira como reserva. */
+async function ler(fn, ...args){
+  try{
+    if(quitaRO) return await quitaRO[fn](...args);
+  }catch(e){
+    console.warn("RPC publico falhou em "+fn+", tentando pela carteira:", e.message);
+  }
+  if(quita) return await quita[fn](...args);
+  throw new Error("Sem provedor disponivel para leitura");
+}
 
 // ---------- carteira ----------
 async function conectar(){
@@ -763,7 +777,7 @@ async function buscarCobranca(){
   const id=$("inIdPagar").value.trim(); limpaAviso($("avisoPagar"));
   if(!id||Number(id)<1){ toast(t("num_cobranca")); return; }
   try{
-    const c=await (quita||quitaRO).consultar(id);
+    const c=await ler("consultar",id);
     cobrancaAtual={id,...c}; mostrarCobranca(c);
   }catch(e){ console.error(e); $("detCobranca").classList.add("oculto"); aviso($("avisoPagar"),"erro","#"+id+" — "+t("nao_achou")); }
 }
@@ -791,13 +805,13 @@ async function avaliarPagamento(){
   if(conta.toLowerCase()===cobrancaAtual.recebedor.toLowerCase()){ setSemaforo("nao",t("sem_sua"),t("sem_sua_d")); $("btnCancelar").classList.remove("oculto"); return; }
   setSemaforo("checando",t("sem_check"),t("sem_check_d"));
   try{
-    const [ok,motivo]=await (quita||quitaRO).podePagar(cobrancaAtual.id,conta);
+    const [ok,motivo]=await ler("podePagar",cobrancaAtual.id,conta);
     if(ok){ setSemaforo("pronto",t("sem_pronto"),t("sem_pronto_d")); $("btnPagar").classList.remove("oculto"); $("btnAprovar").classList.add("oculto"); }
     else if(/aprovar|approve/i.test(motivo)){
       setSemaforo("falta",t("sem_falta"),t("sem_falta_d").replace("TOKEN",nomeMoeda(cobrancaAtual.moeda)));
       $("btnAprovar").classList.remove("oculto"); $("btnAprovar").textContent=t("btn_aprovar")+" "+nomeMoeda(cobrancaAtual.moeda); $("btnPagar").classList.add("oculto");
     } else { setSemaforo("nao",motivo,""); $("btnAprovar").classList.add("oculto"); $("btnPagar").classList.add("oculto"); }
-  }catch(e){ console.error(e); setSemaforo("nao",t("sem_check"),""); }
+  }catch(e){ console.error(e); const m=String((e&&(e.reason||e.message))||"").slice(0,110); setSemaforo("nao",t("sem_erro"),m); }
 }
 $("btnAprovar").onclick=async()=>{
   if(!signer){ await conectar(); }
@@ -836,7 +850,7 @@ $("btnCancelar").onclick=async()=>{
 async function carregarHistorico(){
   if(!conta) return;
   try{
-    const [emit,pag]=await Promise.all([quita.cobrancasEmitidas(conta),quita.cobrancasPagas(conta)]);
+    const [emit,pag]=await Promise.all([ler("cobrancasEmitidas",conta),ler("cobrancasPagas",conta)]);
     await renderLista("listaEmitidas",emit,t("vazio_emit"));
     await renderLista("listaPagas",pag,t("vazio_pag"));
   }catch(e){ console.error(e); }
@@ -844,7 +858,7 @@ async function carregarHistorico(){
 async function renderLista(elId,ids,vazioMsg){
   const el=$(elId);
   if(!ids||ids.length===0){ el.innerHTML='<div class="lista-vazia"><b>'+vazioMsg+'</b></div>'; return; }
-  const cobs=await Promise.all(ids.map(id=>quita.consultar(id).then(c=>({id:id.toString(),c})).catch(()=>null)));
+  const cobs=await Promise.all(ids.map(id=>ler("consultar",id).then(c=>({id:id.toString(),c})).catch(()=>null)));
   el.innerHTML="";
   cobs.filter(Boolean).reverse().forEach(({id,c})=>{
     const status=Number(c.status);
