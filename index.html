@@ -529,7 +529,7 @@ const I18N = {
     err_valorinv:"Valor invalido. Use no maximo 6 casas decimais.",
     info_enviada:"Transacao enviada. Aguardando confirmacao...", ok_pago:"Pagamento confirmado! O valor caiu direto na carteira do recebedor.",
     nao_achou:"Cobranca nao encontrada.", vazio_emit:"Voce ainda nao criou cobrancas", vazio_pag:"Voce ainda nao pagou cobrancas",
-    sem_erro:"Nao foi possivel verificar", liquidada:"Liquidada em", ver_tx:"Ver transacao", tx_criada:"Cobranca criada on-chain", tx_paga:"Pagamento confirmado on-chain", tx_aprov:"Aprovacao confirmada", tx_cancel:"Cancelamento confirmado"
+    sem_erro:"Nao foi possivel verificar", err_limite:"A rede Arc esta com limite de consultas no momento. Espere alguns segundos e tente de novo.", err_recusado:"Voce recusou a assinatura na carteira.", err_saldo:"Saldo insuficiente para concluir.", liquidada:"Liquidada em", ver_tx:"Ver transacao", tx_criada:"Cobranca criada on-chain", tx_paga:"Pagamento confirmado on-chain", tx_aprov:"Aprovacao confirmada", tx_cancel:"Cancelamento confirmado"
   },
   en: {
     conectar:"Connect wallet", rede_tag:" · Arc Testnet", rede_ativa:"Arc network live · instant settlement",
@@ -560,7 +560,7 @@ const I18N = {
     err_valorinv:"Invalid amount. Use at most 6 decimals.",
     info_enviada:"Transaction sent. Waiting for confirmation...", ok_pago:"Payment confirmed! Funds landed straight in the receiver's wallet.",
     nao_achou:"Request not found.", vazio_emit:"You haven't created requests yet", vazio_pag:"You haven't paid requests yet",
-    sem_erro:"Could not verify", liquidada:"Settled in", ver_tx:"View transaction", tx_criada:"Request created on-chain", tx_paga:"Payment confirmed on-chain", tx_aprov:"Approval confirmed", tx_cancel:"Cancellation confirmed"
+    sem_erro:"Could not verify", err_limite:"The Arc network is rate-limiting requests right now. Wait a few seconds and try again.", err_recusado:"You rejected the signature in the wallet.", err_saldo:"Insufficient balance to complete.", liquidada:"Settled in", ver_tx:"View transaction", tx_criada:"Request created on-chain", tx_paga:"Payment confirmed on-chain", tx_aprov:"Approval confirmed", tx_cancel:"Cancellation confirmed"
   },
   es: {
     conectar:"Conectar billetera", rede_tag:" · Arc Testnet", rede_ativa:"Red Arc activa · liquidacion instantanea",
@@ -591,7 +591,7 @@ const I18N = {
     err_valorinv:"Monto invalido. Usa maximo 6 decimales.",
     info_enviada:"Transaccion enviada. Esperando confirmacion...", ok_pago:"Pago confirmado! El valor llego directo a la billetera del receptor.",
     nao_achou:"Cobro no encontrado.", vazio_emit:"Aun no has creado cobros", vazio_pag:"Aun no has pagado cobros",
-    sem_erro:"No se pudo verificar", liquidada:"Liquidado en", ver_tx:"Ver transaccion", tx_criada:"Cobro creado on-chain", tx_paga:"Pago confirmado on-chain", tx_aprov:"Aprobacion confirmada", tx_cancel:"Cancelacion confirmada"
+    sem_erro:"No se pudo verificar", err_limite:"La red Arc esta limitando consultas ahora. Espera unos segundos e intenta de nuevo.", err_recusado:"Rechazaste la firma en la billetera.", err_saldo:"Saldo insuficiente para completar.", liquidada:"Liquidado en", ver_tx:"Ver transaccion", tx_criada:"Cobro creado on-chain", tx_paga:"Pago confirmado on-chain", tx_aprov:"Aprobacion confirmada", tx_cancel:"Cancelacion confirmada"
   },
   fr: {
     conectar:"Connecter le portefeuille", rede_tag:" · Arc Testnet", rede_ativa:"Reseau Arc actif · reglement instantane",
@@ -622,7 +622,7 @@ const I18N = {
     err_valorinv:"Montant invalide. Utilisez au maximum 6 decimales.",
     info_enviada:"Transaction envoyee. En attente de confirmation...", ok_pago:"Paiement confirme! Les fonds sont arrives direct dans le portefeuille du beneficiaire.",
     nao_achou:"Demande introuvable.", vazio_emit:"Vous n'avez pas encore cree de demandes", vazio_pag:"Vous n'avez pas encore paye de demandes",
-    sem_erro:"Verification impossible", liquidada:"Regle en", ver_tx:"Voir la transaction", tx_criada:"Demande creee on-chain", tx_paga:"Paiement confirme on-chain", tx_aprov:"Approbation confirmee", tx_cancel:"Annulation confirmee"
+    sem_erro:"Verification impossible", err_limite:"Le reseau Arc limite les requetes en ce moment. Attendez quelques secondes et reessayez.", err_recusado:"Vous avez refuse la signature dans le portefeuille.", err_saldo:"Solde insuffisant pour terminer.", liquidada:"Regle en", ver_tx:"Voir la transaction", tx_criada:"Demande creee on-chain", tx_paga:"Paiement confirme on-chain", tx_aprov:"Approbation confirmee", tx_cancel:"Annulation confirmee"
   }
 };
 let lang = "pt";
@@ -691,13 +691,50 @@ try{ iniciaLeitura(); }catch(e){ console.error("Falha ao iniciar leitura:",e); }
    Motivo: o provider da carteira (Rabby/MetaMask) impoe limite de requisicoes
    ("request limit reached") e derruba consultas encadeadas como podePagar.
    Se o RPC publico falhar, cai para o provider da carteira como reserva. */
+const _cache = new Map();          // guarda leituras recentes
+const _CACHE_MS = 20000;           // validade do cache: 20s
+const espera = (ms)=>new Promise(r=>setTimeout(r,ms));
+const ehLimite = (e)=>/limit|rate|429|too many/i.test(String((e&&(e.message||e.reason))||""));
+
+function limpaCache(){ _cache.clear(); }
+
+/* Traduz erros tecnicos em mensagem util para o usuario. */
+function msgErro(e){
+  const bruto = String((e&&(e.reason||e.message))||"");
+  if(ehLimite(bruto?{message:bruto}:e)) return t("err_limite");
+  if(/user rejected|denied|cancel/i.test(bruto)) return t("err_recusado");
+  if(/insufficient/i.test(bruto)) return t("err_saldo");
+  return bruto.slice(0,160) || "Falhou";
+}
+
 async function ler(fn, ...args){
-  try{
-    if(quitaRO) return await quitaRO[fn](...args);
-  }catch(e){
-    console.warn("RPC publico falhou em "+fn+", tentando pela carteira:", e.message);
+  const chave = fn+"("+args.join(",")+")";
+  const agora = Date.now();
+
+  // 1) cache: evita repetir a mesma leitura em poucos segundos
+  const guardado = _cache.get(chave);
+  if(guardado && (agora - guardado.quando) < _CACHE_MS) return guardado.valor;
+
+  // 2) tenta o RPC publico; se der limite, espera e tenta de novo
+  for(let tentativa=0; tentativa<3; tentativa++){
+    try{
+      if(!quitaRO) break;
+      const valor = await quitaRO[fn](...args);
+      _cache.set(chave,{valor,quando:Date.now()});
+      return valor;
+    }catch(e){
+      if(ehLimite(e) && tentativa<2){ await espera(700*(tentativa+1)); continue; }
+      console.warn("RPC publico falhou em "+fn+":", e.message);
+      break;
+    }
   }
-  if(quita) return await quita[fn](...args);
+
+  // 3) ultimo recurso: provider da carteira
+  if(quita){
+    const valor = await quita[fn](...args);
+    _cache.set(chave,{valor,quando:Date.now()});
+    return valor;
+  }
   throw new Error("Sem provedor disponivel para leitura");
 }
 
@@ -716,7 +753,7 @@ async function conectar(){
     window.ethereum.on("accountsChanged",()=>location.reload());
     window.ethereum.on("chainChanged",()=>location.reload());
     toast(t("t_conectada"));
-    carregarHistorico();
+    carregarHistorico(true);
   }catch(e){
     console.error("Falha ao conectar:",e);
     const m=String((e&&(e.reason||e.message))||"").slice(0,120);
@@ -776,10 +813,10 @@ $("btnCriar").onclick=async()=>{
     $("qrcode").innerHTML="";
     new QRCode($("qrcode"),{text:url,width:104,height:104,colorDark:"#0B3FB0",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M});
     $("linkBox").classList.add("mostra");
-    aviso($("avisoCriar"),"ok",t("tx_criada")+" · "+linkTx(rec.transactionHash));
+    limpaCache(); aviso($("avisoCriar"),"ok",t("tx_criada")+" · "+linkTx(rec.transactionHash));
     toast(t("t_criada")+" #"+novoId);
     $("inValor").value=""; $("inDesc").value="";
-  }catch(e){ console.error(e); aviso($("avisoCriar"),"erro",String(e.reason||e.message||"Falhou").slice(0,160)); }
+  }catch(e){ console.error(e); aviso($("avisoCriar"),"erro",msgErro(e)); }
   finally{ btn.disabled=false; btn.textContent=t("btn_criar"); }
 };
 $("btnCopiar").onclick=()=>navigator.clipboard.writeText($("linkUrl").textContent).then(()=>toast(t("t_copiado")));
@@ -831,7 +868,7 @@ async function avaliarPagamento(){
       setSemaforo("falta",t("sem_falta"),t("sem_falta_d").replace("TOKEN",nomeMoeda(cobrancaAtual.moeda)));
       $("btnAprovar").classList.remove("oculto"); $("btnAprovar").textContent=t("btn_aprovar")+" "+nomeMoeda(cobrancaAtual.moeda); $("btnPagar").classList.add("oculto");
     } else { setSemaforo("nao",motivo,""); $("btnAprovar").classList.add("oculto"); $("btnPagar").classList.add("oculto"); }
-  }catch(e){ console.error(e); const m=String((e&&(e.reason||e.message))||"").slice(0,110); setSemaforo("nao",t("sem_erro"),m); }
+  }catch(e){ console.error(e); setSemaforo("nao",t("sem_erro"),msgErro(e)); }
 }
 $("btnAprovar").onclick=async()=>{
   if(!signer){ await conectar(); }
@@ -842,8 +879,8 @@ $("btnAprovar").onclick=async()=>{
     const token=new ethers.Contract(endMoeda(cobrancaAtual.moeda),ABI_ERC20,signer);
     const tx=await token.approve(CONTRATO,cobrancaAtual.valor);
     aviso($("avisoPagar"),"info",t("info_enviada")); const rec=await tx.wait();
-    aviso($("avisoPagar"),"ok",t("tx_aprov")+" · "+linkTx(rec.transactionHash)); toast(t("t_aprovado")); await avaliarPagamento();
-  }catch(e){ console.error(e); aviso($("avisoPagar"),"erro",String(e.reason||e.message||"Falhou").slice(0,160)); }
+    limpaCache(); aviso($("avisoPagar"),"ok",t("tx_aprov")+" · "+linkTx(rec.transactionHash)); toast(t("t_aprovado")); await avaliarPagamento();
+  }catch(e){ console.error(e); aviso($("avisoPagar"),"erro",msgErro(e)); }
   finally{ btn.disabled=false; btn.textContent=t("btn_aprovar")+" "+nomeMoeda(cobrancaAtual.moeda); }
 };
 $("btnPagar").onclick=async()=>{
@@ -853,22 +890,26 @@ $("btnPagar").onclick=async()=>{
   try{
     const tx=await quita.pagar(cobrancaAtual.id,memo);
     aviso($("avisoPagar"),"info",t("info_enviada")); const rec=await tx.wait();
-    aviso($("avisoPagar"),"ok",t("ok_pago")+"<br>"+t("tx_paga")+" · "+linkTx(rec.transactionHash)); toast(t("t_pago"));
-    await buscarCobranca(); carregarHistorico();
-  }catch(e){ console.error(e); aviso($("avisoPagar"),"erro",String(e.reason||e.message||"Falhou").slice(0,160)); }
+    limpaCache(); aviso($("avisoPagar"),"ok",t("ok_pago")+"<br>"+t("tx_paga")+" · "+linkTx(rec.transactionHash)); toast(t("t_pago"));
+    await buscarCobranca(); carregarHistorico(true);
+  }catch(e){ console.error(e); aviso($("avisoPagar"),"erro",msgErro(e)); }
   finally{ btn.disabled=false; btn.textContent=t("btn_pagar"); }
 };
 $("btnCancelar").onclick=async()=>{
   if(!signer||!cobrancaAtual) return;
   const btn=$("btnCancelar"); btn.disabled=true; btn.innerHTML='<span class="spin"></span>...';
-  try{ const tx=await quita.cancelar(cobrancaAtual.id); const rec=await tx.wait(); aviso($("avisoPagar"),"ok",t("tx_cancel")+" · "+linkTx(rec.transactionHash)); toast(t("t_cancelada")); await buscarCobranca(); carregarHistorico(); }
-  catch(e){ console.error(e); aviso($("avisoPagar"),"erro",String(e.reason||e.message||"Falhou").slice(0,160)); }
+  try{ const tx=await quita.cancelar(cobrancaAtual.id); const rec=await tx.wait(); limpaCache(); aviso($("avisoPagar"),"ok",t("tx_cancel")+" · "+linkTx(rec.transactionHash)); toast(t("t_cancelada")); await buscarCobranca(); carregarHistorico(true); }
+  catch(e){ console.error(e); aviso($("avisoPagar"),"erro",msgErro(e)); }
   finally{ btn.disabled=false; btn.textContent=t("btn_cancelar"); }
 };
 
 // ---------- historico ----------
-async function carregarHistorico(){
+let _histQuando = 0;
+async function carregarHistorico(forcar){
   if(!conta) return;
+  const agora = Date.now();
+  if(!forcar && (agora - _histQuando) < 15000) return;  // evita recarga repetida
+  _histQuando = agora;
   try{
     const [emit,pag]=await Promise.all([ler("cobrancasEmitidas",conta),ler("cobrancasPagas",conta)]);
     await renderLista("listaEmitidas",emit,t("vazio_emit"));
@@ -878,7 +919,8 @@ async function carregarHistorico(){
 async function renderLista(elId,ids,vazioMsg){
   const el=$(elId);
   if(!ids||ids.length===0){ el.innerHTML='<div class="lista-vazia"><b>'+vazioMsg+'</b></div>'; return; }
-  const cobs=await Promise.all(ids.map(id=>ler("consultar",id).then(c=>({id:id.toString(),c})).catch(()=>null)));
+  const recentes=ids.slice(-20);  // so as 20 mais recentes, para poupar chamadas
+  const cobs=await Promise.all(recentes.map(id=>ler("consultar",id).then(c=>({id:id.toString(),c})).catch(()=>null)));
   el.innerHTML="";
   cobs.filter(Boolean).reverse().forEach(({id,c})=>{
     const status=Number(c.status);
