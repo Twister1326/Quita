@@ -794,12 +794,16 @@ document.querySelectorAll(".moeda-op").forEach(op=>{
 // ---------- criar ----------
 $("btnCriar").onclick=async()=>{
   limpaAviso($("avisoCriar")); $("linkBox").classList.remove("mostra");
-  if(!signer){ await conectar(); if(!signer) return; }
+
+  // Valida o formulario ANTES de pedir a carteira:
+  // nao faz sentido obrigar a conectar so para descobrir que o campo esta vazio.
   const valorTxt=$("inValor").value.trim(); const desc=$("inDesc").value.trim();
   if(!valorTxt||Number(valorTxt)<=0){ aviso($("avisoCriar"),"erro",t("err_valor")); return; }
   if(!desc){ aviso($("avisoCriar"),"erro",t("err_desc")); return; }
   let valorBruto;
   try{ valorBruto=ethers.utils.parseUnits(valorTxt,DECIMAIS); }catch{ aviso($("avisoCriar"),"erro",t("err_valorinv")); return; }
+
+  if(!signer){ await conectar(); if(!signer) return; }
   const btn=$("btnCriar"); btn.disabled=true; btn.innerHTML='<span class="spin"></span>...';
   try{
     const tx=await quita.criarCobranca(valorBruto,moedaSel,desc);
