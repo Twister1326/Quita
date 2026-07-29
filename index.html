@@ -983,7 +983,7 @@ async function renderLista(elId,ids,vazioMsg){
 window.addEventListener("load",async()=>{
   aplicarIdioma();
   registrarListeners();
-  const id=new URLSearchParams(location.search).get("id");,
+  const id=new URLSearchParams(location.search).get("id");
   if(id){
     if(window.ethereum&&window.ethereum.selectedAddress){ await conectar(); }
     irParaPagar(id);
