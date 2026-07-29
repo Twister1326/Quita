@@ -347,9 +347,9 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       <span class="tag" data-i18n="rede_tag"> · Arc Testnet</span>
     </div>
   </div>
-  <button class="btn-carteira" id="btnCarteira" data-i18n="conectar">Conectar carteira</button>
-</header>
-
+<button class="btn-carteira" id="btnCarteira" data-i18n="conectar">Conectar carteira</button>
+<button class="btn-carteira oculto" id="btnTrocar" title="Trocar carteira" style="padding:0 12px;font-size:16px">⇄</button>
+ </header> 
 <section class="tese">
   <div class="selo-rede"><span class="ponto"></span><span data-i18n="rede_ativa">Rede Arc ativa · liquidacao instantanea</span></div>
   <h1 data-i18n="hero_titulo">Cobre em stablecoin com <span class="destaque">certeza</span> antes de pagar.</h1>
@@ -750,8 +750,7 @@ async function conectar(){
     conta=await signer.getAddress();
     quita=new ethers.Contract(CONTRATO,ABI_QUITA,signer);
     const b=$("btnCarteira"); b.textContent=curto(conta); b.classList.add("conectado");
-    window.ethereum.on("accountsChanged",()=>location.reload());
-    window.ethereum.on("chainChanged",()=>location.reload());
+  $("btnTrocar").classList.remove("oculto");
     toast(t("t_conectada"));
     carregarHistorico(true);
   }catch(e){
@@ -773,8 +772,50 @@ async function trocarRede(){
       }]});
     } else throw err;
   }
+// ---------- troca de carteira sem recarregar ----------
+let listenersProntos=false;
+
+async function aplicarConta(){
+  provider=new ethers.providers.Web3Provider(window.ethereum,"any");
+  signer=provider.getSigner();
+  conta=await signer.getAddress();
+  quita=new ethers.Contract(CONTRATO,ABI_QUITA,signer);
+  const b=$("btnCarteira"); b.textContent=curto(conta); b.classList.add("conectado");
+  $("btnTrocar").classList.remove("oculto");
+  limpaCache();
+  if(cobrancaAtual) await buscarCobranca();
+  carregarHistorico(true);
 }
-$("btnCarteira").onclick=conectar;
+
+function desconectarUI(){
+  signer=null; conta=null; quita=null;
+  const b=$("btnCarteira"); b.textContent=t("conectar"); b.classList.remove("conectado");
+  $("btnTrocar").classList.add("oculto");
+  if(cobrancaAtual) avaliarPagamento();
+}
+
+async function trocarCarteira(){
+  if(!window.ethereum){ toast(t("t_semcart")); return; }
+  try{
+    await window.ethereum.request({method:"wallet_requestPermissions",params:[{eth_accounts:{}}]});
+    await aplicarConta();
+    toast(curto(conta));
+  }catch(e){ console.error("Troca cancelada:",e); }
+}
+
+function registrarListeners(){
+  if(listenersProntos||!window.ethereum) return;
+  listenersProntos=true;
+  window.ethereum.on("accountsChanged",async(contas)=>{
+    if(!contas||contas.length===0){ desconectarUI(); return; }
+    await aplicarConta();
+    toast(t("t_conectada")+" "+curto(conta));
+  });
+  window.ethereum.on("chainChanged",()=>location.reload());
+}
+
+$("btnTrocar").onclick=trocarCarteira;
+}$("btnCarteira").onclick=conectar;
 
 // ---------- abas ----------
 document.querySelectorAll(".aba").forEach(a=>{
@@ -860,13 +901,16 @@ function mostrarCobranca(c){
   avaliarPagamento();
 }
 function setSemaforo(estado,titulo,detalhe){ const s=$("semaforo"); s.className="semaforo "+estado; $("semTitulo").textContent=titulo; $("semDetalhe").textContent=detalhe; }
+let _avalSeq=0;
 async function avaliarPagamento(){
+  const seq=++_avalSeq;
   if(!cobrancaAtual) return;
   if(!conta){ setSemaforo("falta",t("sem_conecte"),t("sem_conecte_d")); $("btnAprovar").classList.remove("oculto"); $("btnAprovar").textContent=t("conectar"); return; }
   if(conta.toLowerCase()===cobrancaAtual.recebedor.toLowerCase()){ setSemaforo("nao",t("sem_sua"),t("sem_sua_d")); $("btnCancelar").classList.remove("oculto"); return; }
   setSemaforo("checando",t("sem_check"),t("sem_check_d"));
   try{
     const [ok,motivo]=await ler("podePagar",cobrancaAtual.id,conta);
+    if(seq!==_avalSeq) return;
     if(ok){ setSemaforo("pronto",t("sem_pronto"),t("sem_pronto_d")); $("btnPagar").classList.remove("oculto"); $("btnAprovar").classList.add("oculto"); }
     else if(/aprovar|approve/i.test(motivo)){
       setSemaforo("falta",t("sem_falta"),t("sem_falta_d").replace("TOKEN",nomeMoeda(cobrancaAtual.moeda)));
@@ -938,10 +982,11 @@ async function renderLista(elId,ids,vazioMsg){
 // ---------- roteamento por link ----------
 window.addEventListener("load",async()=>{
   aplicarIdioma();
-  const id=new URLSearchParams(location.search).get("id");
+  registrarListeners();
+  const id=new URLSearchParams(location.search).get("id");,
   if(id){
+    if(window.ethereum&&window.ethereum.selectedAddress){ await conectar(); }
     irParaPagar(id);
-    if(window.ethereum&&window.ethereum.selectedAddress){ await conectar(); buscarCobranca(); }
   }
 });
 </script>
