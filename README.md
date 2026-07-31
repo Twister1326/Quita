@@ -4,7 +4,7 @@
 
 Crie uma cobrança em USDC ou EURC, compartilhe um link ou QR Code, e receba direto na sua carteira. O pagador vê **antes de gastar gás** se o pagamento vai passar.
 
-🔗 **App:** https://twister1326.github.io/Quita/
+🔗 **App:** https://quitapay.xyz
 📜 **Contrato:** [`0xF1979d37646266f3C5C2c250F0F8798D6E0f28D7`](https://testnet.arcscan.app/address/0xF1979d37646266f3C5C2c250F0F8798D6E0f28D7) — verificado (Sourcify, Exact Match)
 🌐 **Rede:** Arc Testnet (Chain ID `5042002`)
 
