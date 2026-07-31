@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
@@ -773,7 +773,7 @@ async function trocarRede(){
   } else throw err;
   }
 }
-
+let listenersProntos=false;
 // ---------- troca de carteira sem recarregar ----------
 async function aplicarConta(){
   provider=new ethers.providers.Web3Provider(window.ethereum,"any");
@@ -815,7 +815,7 @@ function registrarListeners(){
 }
 
 $("btnTrocar").onclick=trocarCarteira;
-}$("btnCarteira").onclick=conectar;
+$("btnCarteira").onclick=conectar;
 
 // ---------- abas ----------
 document.querySelectorAll(".aba").forEach(a=>{
