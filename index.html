@@ -193,6 +193,85 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   input:focus, textarea:focus { outline: none; border-color: var(--ciano); box-shadow: 0 0 0 3px rgba(41,224,212,.15); }
   textarea { resize: vertical; min-height: 64px; }
 
+  /* tira as setinhas de aumentar/diminuir do campo numerico */
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+
+  /* ---------- CAMPO DESCRICAO COM ATALHOS ---------- */
+  .combo { position: relative; }
+  .combo input { padding-right: 44px; }
+  .combo .seta {
+    position: absolute; right: 7px; top: 50%; transform: translateY(-50%);
+    width: 30px; height: 30px; border: none; background: transparent;
+    color: var(--texto-min); cursor: pointer; font-size: 11px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 8px; transition: color .15s, transform .18s;
+  }
+  .combo .seta:hover { color: var(--ciano); }
+  .combo.aberto .seta { transform: translateY(-50%) rotate(180deg); color: var(--ciano); }
+  .combo-menu {
+    position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 40;
+    background: var(--carta-2); border: 1.5px solid var(--linha-2);
+    border-radius: 12px; padding: 5px; box-shadow: var(--sombra);
+    max-height: 258px; overflow-y: auto; display: none;
+  }
+  .combo.aberto .combo-menu { display: block; }
+  .combo-op {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 9px; font-size: 14px;
+    color: var(--texto-fraco); cursor: pointer;
+    transition: background .12s, color .12s;
+  }
+  .combo-op:hover { background: rgba(255,255,255,.06); color: var(--texto); }
+  .combo-op.sel { color: var(--texto); background: rgba(41,224,212,.10); }
+  .combo-op .ic { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+
+  /* ---------- CARTAO DA REDE ARC ---------- */
+  .rede-bloco { max-width: 640px; margin: 0 auto 24px; padding: 0 16px; position: relative; z-index: 1; }
+  .rede-card {
+    background: linear-gradient(180deg, var(--carta) 0%, var(--carta-2) 100%);
+    border: 1px solid var(--linha); border-radius: var(--raio);
+    padding: 18px 20px; box-shadow: var(--sombra);
+  }
+  .rede-topo { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .rede-txt { flex: 1; min-width: 200px; }
+  .rede-txt b { display: block; font-size: 14px; margin-bottom: 2px; }
+  .rede-txt small { color: var(--texto-fraco); font-size: 12.5px; }
+  .btn-rede {
+    background: var(--grad); color: #fff; border: none; padding: 11px 17px;
+    border-radius: 11px; font-weight: 700; font-size: 13.5px; cursor: pointer;
+    font-family: inherit; white-space: nowrap; box-shadow: 0 4px 16px rgba(19,97,240,.35);
+    transition: transform .08s, box-shadow .15s;
+  }
+  .btn-rede:hover { box-shadow: 0 6px 22px rgba(19,97,240,.5); transform: translateY(-1px); }
+  .btn-rede:active { transform: translateY(0); }
+  .rede-ver {
+    background: none; border: none; color: var(--texto-fraco); font-family: inherit;
+    font-size: 12.5px; cursor: pointer; margin-top: 13px; padding: 0; text-decoration: underline;
+  }
+  .rede-ver:hover { color: var(--ciano); }
+  .rede-dados { display: none; margin-top: 13px; border-top: 1px solid var(--linha); padding-top: 8px; }
+  .rede-dados.aberto { display: block; }
+  .rede-linha {
+    display: flex; align-items: center; gap: 10px; padding: 8px 0;
+    font-size: 12.5px; border-bottom: 1px solid rgba(255,255,255,.05);
+  }
+  .rede-linha:last-child { border-bottom: none; }
+  .rede-linha .rk { color: var(--texto-min); width: 88px; flex-shrink: 0; }
+  .rede-linha .rv {
+    flex: 1; word-break: break-all;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px;
+  }
+  .rede-linha .rv a { color: var(--ciano); text-decoration: none; }
+  .rede-linha .rv a:hover { text-decoration: underline; }
+  .rede-linha .rc {
+    background: rgba(255,255,255,.05); border: 1px solid var(--linha-2); color: var(--texto-fraco);
+    border-radius: 7px; padding: 4px 9px; font-size: 11px; cursor: pointer;
+    font-family: inherit; flex-shrink: 0; transition: color .12s, border-color .12s;
+  }
+  .rede-linha .rc:hover { color: var(--ciano); border-color: var(--ciano); }
+
   .valor-linha { display: flex; gap: 10px; }
   .valor-linha .campo-valor { flex: 1; }
   .valor-linha input { font-size: 24px; font-weight: 700; }
@@ -316,6 +395,52 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   .rodape a:hover { color: var(--ciano); }
 
   .oculto { display: none !important; }
+
+  /* ---------- ALERTA DE REDE ERRADA ---------- */
+  /* ---------- METRICAS AO VIVO DA ARC ---------- */
+  .metricas { max-width: 640px; margin: 20px auto 0; padding: 0 16px; position: relative; z-index: 4; }
+  .met-topo {
+    display: flex; align-items: center; gap: 7px; padding: 0 2px 8px;
+    font-size: 11.5px; color: var(--texto-min);
+  }
+  .met-topo .vivo {
+    width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+    background: var(--menta); box-shadow: 0 0 7px var(--menta); animation: pisca 2s infinite;
+  }
+  .met-topo a { margin-left: auto; color: var(--texto-min); text-decoration: none; border-bottom: 1px solid var(--linha-2); }
+  .met-topo a:hover { color: var(--ciano); border-color: var(--ciano); }
+  .met-grade { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .met-card {
+    background: rgba(13,21,48,.55); border: 1px solid var(--linha);
+    border-radius: 12px; padding: 12px 13px; min-width: 0;
+    display: block; text-decoration: none; color: inherit; transition: border-color .15s;
+  }
+  a.met-card:hover { border-color: rgba(41,224,212,.45); }
+  .met-k {
+    font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--texto-min); margin-bottom: 5px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .met-v { font-size: 19px; font-weight: 800; letter-spacing: -.02em; line-height: 1.15; }
+  .met-v .un { font-size: 11.5px; font-weight: 600; color: var(--texto-fraco); margin-left: 3px; }
+  .met-d { font-size: 11px; color: var(--texto-min); margin-top: 4px; line-height: 1.35; }
+  @media (max-width: 560px) { .met-grade { grid-template-columns: repeat(2, 1fr); } }
+
+  .alerta-bloco { max-width: 640px; margin: 18px auto 0; padding: 0 16px; position: relative; z-index: 6; }
+  .alerta-rede {
+    padding: 12px 16px; border-radius: 13px;
+    border: 1.5px solid rgba(255,92,108,.45);
+    background: rgba(255,92,108,.10);
+    box-shadow: 0 6px 22px rgba(255,92,108,.14);
+  }
+  .alerta-rede .ar-txt b {
+    display: block; font-size: 13.5px; font-weight: 700; color: var(--rubro); margin-bottom: 2px;
+    animation: piscaAlerta 1.6s ease-in-out infinite;
+  }
+  .alerta-rede .ar-txt small { display: block; font-size: 12.5px; color: var(--texto); }
+  @keyframes piscaAlerta { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+  /* o cartao la embaixo acompanha o alerta */
+  .rede-card.alerta { border-color: rgba(255,92,108,.45); }
   .spin { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: girar .7s linear infinite; vertical-align: -2px; margin-right: 7px; }
   @keyframes girar { to { transform: rotate(360deg); } }
 
@@ -350,10 +475,50 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 <button class="btn-carteira" id="btnCarteira" data-i18n="conectar">Conectar carteira</button>
 <button class="btn-carteira oculto" id="btnTrocar" title="Trocar carteira" style="padding:0 12px;font-size:16px">⇄</button>
  </header> 
+
+<div class="alerta-bloco oculto" id="alertaRede">
+  <div class="alerta-rede">
+    <div class="ar-txt">
+      <b data-i18n="ar_titulo">Carteira em outra rede</b>
+      <small data-i18n="ar_sub">Troque para a Arc Testnet antes de criar ou pagar uma cobranca.</small>
+    </div>
+  </div>
+</div>
+
 <section class="tese">
   <div class="selo-rede"><span class="ponto"></span><span data-i18n="rede_ativa">Rede Arc ativa · liquidacao instantanea</span></div>
-  <h1 data-i18n="hero_titulo">Cobre em stablecoin com <span class="destaque">certeza</span> antes de pagar.</h1>
-  <p data-i18n="hero_sub">Crie uma cobranca, compartilhe o link. O pagador ve se pode pagar antes de gastar gas — e a liquidacao cai direto na sua carteira.</p>
+  <h1 data-i18n="hero_titulo">Cobre em stablecoin e <span class="destaque">saiba antes</span> se o pagamento vai passar</h1>
+  <p data-i18n="hero_sub">Crie uma cobranca, compartilhe o link. O pagador ve se pode pagar antes de gastar gas. A liquidacao cai direto na sua carteira.</p>
+</section>
+
+<section class="metricas oculto" id="metricas">
+  <div class="met-topo">
+    <span class="vivo"></span>
+    <span data-i18n="met_titulo">Dados ao vivo do RPC da Arc Testnet</span>
+    <a id="metLink" href="#" target="_blank" rel="noopener" data-i18n="met_ver">ver na arcscan</a>
+  </div>
+  <div class="met-grade">
+    <a class="met-card" id="cardBloco" href="#" target="_blank" rel="noopener">
+      <div class="met-k" data-i18n="met_bloco">Bloco</div>
+      <div class="met-v num" id="mBloco">&mdash;</div>
+      <div class="met-d" data-i18n="met_bloco_d">Ultimo bloco produzido</div>
+    </a>
+    <div class="met-card">
+      <div class="met-k" data-i18n="met_tempo">Tempo de bloco</div>
+      <div class="met-v num" id="mTempo">&mdash;</div>
+      <div class="met-d" id="mTempoD">&nbsp;</div>
+    </div>
+    <div class="met-card">
+      <div class="met-k" data-i18n="met_tps">Transacoes/s</div>
+      <div class="met-v num" id="mTps">&mdash;</div>
+      <div class="met-d" id="mTpsD">&nbsp;</div>
+    </div>
+    <div class="met-card">
+      <div class="met-k" data-i18n="met_gas">Preco do gas</div>
+      <div class="met-v num" id="mGas">&mdash;</div>
+      <div class="met-d" id="mGasD">&nbsp;</div>
+    </div>
+  </div>
 </section>
 
 <div class="abas">
@@ -381,14 +546,18 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         </div>
       </div>
 
-      <label><span data-i18n="descricao">Descricao</span> <span class="dica" data-i18n="ate200">(ate 200 caracteres)</span></label>
-      <input type="text" id="inDesc" maxlength="200" data-i18n-ph="ph_desc" placeholder="Ex.: Consultoria de outubro" />
+      <label><span data-i18n="descricao">Descricao</span> <span class="dica" data-i18n="dica_desc">(toque para ver os atalhos ou escreva a sua)</span></label>
+      <div class="combo" id="comboDesc">
+        <input type="text" id="inDesc" maxlength="200" autocomplete="off" data-i18n-ph="ph_desc" placeholder="Ex.: Consultoria de outubro" />
+        <button type="button" class="seta" id="comboSeta" aria-label="Atalhos de descricao">&#9660;</button>
+        <div class="combo-menu" id="comboMenu"></div>
+      </div>
 
       <button class="btn-primario" id="btnCriar" data-i18n="btn_criar">Criar cobranca</button>
       <div class="aviso" id="avisoCriar"></div>
 
       <div class="link-box" id="linkBox">
-        <div class="rotulo" data-i18n="link_rotulo">Cobranca criada — compartilhe</div>
+        <div class="rotulo" data-i18n="link_rotulo">Cobranca criada, compartilhe</div>
         <div class="qr-wrap">
           <div id="qrcode"></div>
           <div class="qr-lado">
@@ -461,6 +630,47 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
 </main>
 
+<div class="rede-bloco">
+  <div class="rede-card">
+    <div class="rede-topo">
+      <div class="rede-txt">
+        <b data-i18n="rede_titulo">Rede Arc Testnet</b>
+        <small data-i18n="rede_sub">Adicione a rede na carteira em um clique.</small>
+      </div>
+      <button class="btn-rede" id="btnAddRede" data-i18n="rede_btn">Adicionar a carteira</button>
+    </div>
+    <button class="rede-ver" id="btnVerRede" data-i18n="rede_ver">Ver dados da rede</button>
+    <div class="rede-dados" id="redeDados">
+      <div class="rede-linha">
+        <span class="rk" data-i18n="rede_k_nome">Rede</span>
+        <span class="rv">Arc Testnet</span>
+      </div>
+      <div class="rede-linha">
+        <span class="rk">Chain ID</span>
+        <span class="rv" id="rvChain">5042002</span>
+        <button class="rc" data-copia="rvChain" data-i18n="copiar">Copiar</button>
+      </div>
+      <div class="rede-linha">
+        <span class="rk" data-i18n="rede_k_moeda">Moeda</span>
+        <span class="rv">USDC &middot; 18 dec</span>
+      </div>
+      <div class="rede-linha">
+        <span class="rk">RPC</span>
+        <span class="rv" id="rvRpc">&mdash;</span>
+        <button class="rc" data-copia="rvRpc" data-i18n="copiar">Copiar</button>
+      </div>
+      <div class="rede-linha">
+        <span class="rk" data-i18n="rede_k_exp">Explorador</span>
+        <span class="rv"><a id="rvExp" href="#" target="_blank" rel="noopener">testnet.arcscan.app</a></span>
+      </div>
+      <div class="rede-linha">
+        <span class="rk">Faucet</span>
+        <span class="rv"><a id="rvFaucet" href="#" target="_blank" rel="noopener">faucet.circle.com</a></span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="rodape">
   <span data-i18n="rodape">Contrato verificado</span>:
   <a id="linkContrato" href="#" target="_blank" rel="noopener">0xF197…28D7</a>
@@ -478,8 +688,21 @@ const USDC = "0x3600000000000000000000000000000000000000";
 const EURC = "0x89B50855Aa3bE2F677cD6303Cec089B5F319D72a";
 const CHAIN_ID = 5042002;
 const CHAIN_HEX = "0x4CEF52"; // 5042002
-const RPC = "https://rpc.testnet.arc.network";
+/* Endpoints publicos da Arc, conforme docs.arc.io/integrate.
+   O primeiro e o oficial; o segundo fica como reserva de leitura. */
+const RPCS = ["https://rpc.testnet.arc.io", "https://rpc.testnet.arc.network"];
+const RPC = RPCS[0];
 const EXPLORER = "https://testnet.arcscan.app";
+const FAUCET = "https://faucet.circle.com";
+/* Parametros exatos de wallet_addEthereumChain (docs.arc.io/integrate).
+   USDC e o token nativo de gas da Arc e usa 18 casas no saldo nativo. */
+const PARAMS_REDE = {
+  chainId: CHAIN_HEX,
+  chainName: "Arc Testnet",
+  nativeCurrency: { name: "USDC", symbol: "USDC", decimals: 18 },
+  rpcUrls: RPCS,
+  blockExplorerUrls: [EXPLORER]
+};
 const DECIMAIS = 6;
 
 const ABI_QUITA = [
@@ -502,12 +725,26 @@ const ABI_ERC20 = [
 const I18N = {
   pt: {
     conectar:"Conectar carteira", rede_tag:" · Arc Testnet", rede_ativa:"Rede Arc ativa · liquidacao instantanea",
-    hero_titulo:'Cobre em stablecoin com <span class="destaque">certeza</span> antes de pagar.',
-    hero_sub:"Crie uma cobranca, compartilhe o link. O pagador ve se pode pagar antes de gastar gas — e a liquidacao cai direto na sua carteira.",
+    hero_titulo:'Cobre em stablecoin e <span class="destaque">saiba antes</span> se o pagamento vai passar',
+    hero_sub:"Crie uma cobranca, compartilhe o link. O pagador ve se pode pagar antes de gastar gas. A liquidacao cai direto na sua carteira.",
+    cat_gas:"Conta de gas", cat_agua:"Conta de agua", cat_luz:"Conta de luz",
+    cat_cel:"Celular / Internet", cat_trib:"Tributos estaduais", cat_out:"Cobrancas diversas",
+    dica_desc:"(toque para ver os atalhos ou escreva a sua)",
+    met_titulo:"Dados ao vivo do RPC da Arc Testnet", met_ver:"ver na arcscan",
+    met_bloco:"Bloco", met_bloco_d:"Ultimo bloco produzido",
+    met_tempo:"Tempo de bloco", met_tempo_d:"Media dos ultimos %s blocos",
+    met_tps:"Transacoes/s", met_tps_d:"%s transacoes em %ts",
+    met_gas:"Preco do gas", met_gas_d:"~%s USDC por transferencia simples",
+    met_juntando:"Juntando blocos...",
+    rede_titulo:"Rede Arc Testnet", rede_sub:"Adicione a rede na carteira em um clique.",
+    ar_titulo:"Carteira em outra rede", ar_sub:"Troque para a Arc Testnet antes de criar ou pagar uma cobranca.",
+    rede_btn:"Adicionar a carteira", rede_ver:"Ver dados da rede", rede_ocultar:"Ocultar dados da rede",
+    rede_k_nome:"Rede", rede_k_moeda:"Moeda", rede_k_exp:"Explorador", copiar:"Copiar",
+    t_rede_ok:"Rede Arc adicionada na carteira", t_rede_ja:"A carteira ja esta na rede Arc",
     aba_cobrar:"Criar cobranca", aba_pagar:"Pagar", aba_hist:"Minhas cobrancas",
     nova_titulo:"Nova cobranca", nova_sub:"Voce recebe direto na sua carteira. O contrato nunca guarda o dinheiro.",
     valor:"Valor", descricao:"Descricao", ate200:"(ate 200 caracteres)", ph_desc:"Ex.: Consultoria de outubro",
-    btn_criar:"Criar cobranca", link_rotulo:"Cobranca criada — compartilhe", btn_copiar:"Copiar link", btn_abrir:"Abrir",
+    btn_criar:"Criar cobranca", link_rotulo:"Cobranca criada, compartilhe", btn_copiar:"Copiar link", btn_abrir:"Abrir",
     pagar_titulo:"Pagar uma cobranca", pagar_sub:"Cole o numero da cobranca ou abra por um link recebido.",
     num_cobranca:"Numero da cobranca", btn_buscar:"Buscar",
     sem_check:"Verificando...", sem_check_d:"Consultando saldo e aprovacao na Arc",
@@ -533,12 +770,26 @@ const I18N = {
   },
   en: {
     conectar:"Connect wallet", rede_tag:" · Arc Testnet", rede_ativa:"Arc network live · instant settlement",
-    hero_titulo:'Bill in stablecoin with <span class="destaque">certainty</span> before paying.',
-    hero_sub:"Create a request, share the link. The payer sees if they can pay before spending gas — and settlement lands straight in your wallet.",
+    hero_titulo:'Bill in stablecoin and <span class="destaque">know upfront</span> if the payment will go through',
+    hero_sub:"Create a request, share the link. The payer sees if they can pay before spending gas. Settlement lands straight in your wallet.",
+    cat_gas:"Gas bill", cat_agua:"Water bill", cat_luz:"Electricity bill",
+    cat_cel:"Phone / Internet", cat_trib:"State taxes", cat_out:"Other charges",
+    dica_desc:"(tap for shortcuts or write your own)",
+    met_titulo:"Live data from the Arc Testnet RPC", met_ver:"view on arcscan",
+    met_bloco:"Block", met_bloco_d:"Latest block produced",
+    met_tempo:"Block time", met_tempo_d:"Average of the last %s blocks",
+    met_tps:"Transactions/s", met_tps_d:"%s transactions in %ts",
+    met_gas:"Gas price", met_gas_d:"~%s USDC per simple transfer",
+    met_juntando:"Collecting blocks...",
+    rede_titulo:"Arc Testnet network", rede_sub:"Add the network to your wallet in one click.",
+    ar_titulo:"Wallet on another network", ar_sub:"Switch to Arc Testnet before creating or paying a request.",
+    rede_btn:"Add to wallet", rede_ver:"Show network details", rede_ocultar:"Hide network details",
+    rede_k_nome:"Network", rede_k_moeda:"Currency", rede_k_exp:"Explorer", copiar:"Copy",
+    t_rede_ok:"Arc network added to the wallet", t_rede_ja:"The wallet is already on Arc",
     aba_cobrar:"New request", aba_pagar:"Pay", aba_hist:"My requests",
     nova_titulo:"New request", nova_sub:"You receive it straight to your wallet. The contract never holds funds.",
     valor:"Amount", descricao:"Description", ate200:"(up to 200 characters)", ph_desc:"e.g. October consulting",
-    btn_criar:"Create request", link_rotulo:"Request created — share it", btn_copiar:"Copy link", btn_abrir:"Open",
+    btn_criar:"Create request", link_rotulo:"Request created, share it", btn_copiar:"Copy link", btn_abrir:"Open",
     pagar_titulo:"Pay a request", pagar_sub:"Paste the request number or open via a received link.",
     num_cobranca:"Request number", btn_buscar:"Search",
     sem_check:"Checking...", sem_check_d:"Reading balance and approval on Arc",
@@ -564,12 +815,26 @@ const I18N = {
   },
   es: {
     conectar:"Conectar billetera", rede_tag:" · Arc Testnet", rede_ativa:"Red Arc activa · liquidacion instantanea",
-    hero_titulo:'Cobra en stablecoin con <span class="destaque">certeza</span> antes de pagar.',
-    hero_sub:"Crea un cobro, comparte el enlace. El pagador ve si puede pagar antes de gastar gas — y la liquidacion llega directo a tu billetera.",
+    hero_titulo:'Cobra en stablecoin y <span class="destaque">confirma antes</span> si el pago va a pasar',
+    hero_sub:"Crea un cobro, comparte el enlace. El pagador ve si puede pagar antes de gastar gas. La liquidacion llega directo a tu billetera.",
+    cat_gas:"Cuenta de gas", cat_agua:"Cuenta de agua", cat_luz:"Cuenta de luz",
+    cat_cel:"Celular / Internet", cat_trib:"Impuestos estatales", cat_out:"Cobros diversos",
+    dica_desc:"(toca para ver los atajos o escribe la tuya)",
+    met_titulo:"Datos en vivo del RPC de Arc Testnet", met_ver:"ver en arcscan",
+    met_bloco:"Bloque", met_bloco_d:"Ultimo bloque producido",
+    met_tempo:"Tiempo de bloque", met_tempo_d:"Promedio de los ultimos %s bloques",
+    met_tps:"Transacciones/s", met_tps_d:"%s transacciones en %ts",
+    met_gas:"Precio del gas", met_gas_d:"~%s USDC por transferencia simple",
+    met_juntando:"Juntando bloques...",
+    rede_titulo:"Red Arc Testnet", rede_sub:"Agrega la red a tu billetera con un clic.",
+    ar_titulo:"Billetera en otra red", ar_sub:"Cambia a Arc Testnet antes de crear o pagar un cobro.",
+    rede_btn:"Agregar a la billetera", rede_ver:"Ver datos de la red", rede_ocultar:"Ocultar datos de la red",
+    rede_k_nome:"Red", rede_k_moeda:"Moneda", rede_k_exp:"Explorador", copiar:"Copiar",
+    t_rede_ok:"Red Arc agregada a la billetera", t_rede_ja:"La billetera ya esta en la red Arc",
     aba_cobrar:"Nuevo cobro", aba_pagar:"Pagar", aba_hist:"Mis cobros",
     nova_titulo:"Nuevo cobro", nova_sub:"Recibes directo en tu billetera. El contrato nunca guarda el dinero.",
     valor:"Monto", descricao:"Descripcion", ate200:"(hasta 200 caracteres)", ph_desc:"Ej.: Consultoria de octubre",
-    btn_criar:"Crear cobro", link_rotulo:"Cobro creado — compartelo", btn_copiar:"Copiar enlace", btn_abrir:"Abrir",
+    btn_criar:"Crear cobro", link_rotulo:"Cobro creado, compartelo", btn_copiar:"Copiar enlace", btn_abrir:"Abrir",
     pagar_titulo:"Pagar un cobro", pagar_sub:"Pega el numero del cobro o abre con un enlace recibido.",
     num_cobranca:"Numero del cobro", btn_buscar:"Buscar",
     sem_check:"Verificando...", sem_check_d:"Consultando saldo y aprobacion en Arc",
@@ -595,16 +860,30 @@ const I18N = {
   },
   fr: {
     conectar:"Connecter le portefeuille", rede_tag:" · Arc Testnet", rede_ativa:"Reseau Arc actif · reglement instantane",
-    hero_titulo:'Facturez en stablecoin avec <span class="destaque">certitude</span> avant de payer.',
-    hero_sub:"Creez une demande, partagez le lien. Le payeur voit s'il peut payer avant de depenser du gas — et le reglement arrive direct dans votre portefeuille.",
+    hero_titulo:'Facturez en stablecoin et <span class="destaque">sachez d\'avance</span> si le paiement va passer',
+    hero_sub:"Creez une demande, partagez le lien. Le payeur voit s'il peut payer avant de depenser du gas. Le reglement arrive direct dans votre portefeuille.",
+    cat_gas:"Facture de gaz", cat_agua:"Facture d'eau", cat_luz:"Facture d'electricite",
+    cat_cel:"Mobile / Internet", cat_trib:"Impots locaux", cat_out:"Autres factures",
+    dica_desc:"(touchez pour les raccourcis ou ecrivez la votre)",
+    met_titulo:"Donnees en direct du RPC Arc Testnet", met_ver:"voir sur arcscan",
+    met_bloco:"Bloc", met_bloco_d:"Dernier bloc produit",
+    met_tempo:"Temps de bloc", met_tempo_d:"Moyenne des %s derniers blocs",
+    met_tps:"Transactions/s", met_tps_d:"%s transactions en %ts",
+    met_gas:"Prix du gas", met_gas_d:"~%s USDC par transfert simple",
+    met_juntando:"Collecte des blocs...",
+    rede_titulo:"Reseau Arc Testnet", rede_sub:"Ajoutez le reseau a votre portefeuille en un clic.",
+    ar_titulo:"Portefeuille sur un autre reseau", ar_sub:"Passez sur Arc Testnet avant de creer ou payer une demande.",
+    rede_btn:"Ajouter au portefeuille", rede_ver:"Voir les details du reseau", rede_ocultar:"Masquer les details du reseau",
+    rede_k_nome:"Reseau", rede_k_moeda:"Devise", rede_k_exp:"Explorateur", copiar:"Copier",
+    t_rede_ok:"Reseau Arc ajoute au portefeuille", t_rede_ja:"Le portefeuille est deja sur Arc",
     aba_cobrar:"Nouvelle demande", aba_pagar:"Payer", aba_hist:"Mes demandes",
     nova_titulo:"Nouvelle demande", nova_sub:"Vous recevez direct dans votre portefeuille. Le contrat ne garde jamais les fonds.",
     valor:"Montant", descricao:"Description", ate200:"(jusqu'a 200 caracteres)", ph_desc:"Ex.: Conseil d'octobre",
-    btn_criar:"Creer la demande", link_rotulo:"Demande creee — partagez", btn_copiar:"Copier le lien", btn_abrir:"Ouvrir",
+    btn_criar:"Creer la demande", link_rotulo:"Demande creee, partagez", btn_copiar:"Copier le lien", btn_abrir:"Ouvrir",
     pagar_titulo:"Payer une demande", pagar_sub:"Collez le numero de la demande ou ouvrez via un lien recu.",
     num_cobranca:"Numero de la demande", btn_buscar:"Chercher",
     sem_check:"Verification...", sem_check_d:"Lecture du solde et de l'approbation sur Arc",
-    mensagem:"Message", ate140:"(enregistre on chain, jusqu'a 140 caracteres)", ph_memo:"Ex.: Paiement facture 032",
+    mensagem:"Message", ate140:"(enregistre onchain, jusqu'a 140 caracteres)", ph_memo:"Ex.: Paiement facture 032",
     btn_aprovar:"Approuver le token", btn_pagar:"Payer maintenant", btn_cancelar:"Annuler cette demande",
     hist_emit:"Demandes emises", hist_emit_sub:"Demandes creees par ce portefeuille.",
     hist_pag:"Demandes payees", hist_pag_sub:"Paiements faits par ce portefeuille.",
@@ -622,7 +901,7 @@ const I18N = {
     err_valorinv:"Montant invalide. Utilisez au maximum 6 decimales.",
     info_enviada:"Transaction envoyee. En attente de confirmation...", ok_pago:"Paiement confirme! Les fonds sont arrives direct dans le portefeuille du beneficiaire.",
     nao_achou:"Demande introuvable.", vazio_emit:"Vous n'avez pas encore cree de demandes", vazio_pag:"Vous n'avez pas encore paye de demandes",
-    sem_erro:"Ver ification impossible", err_limite:"Le reseau Arc limite les requetes en ce moment. Attendez quelques secondes et reessayez.", err_recusado:"Vous avez refuse la signature dans le portefeuille.", err_saldo:"Solde insuffisant pour terminer.", liquidada:"Regle en", ver_tx:"Voir la transaction", tx_criada:"Demande creee onchain", tx_paga:"Paiement confirme onchain", tx_aprov:"Approbation confirmee", tx_cancel:"Annulation confirmee"
+    sem_erro:"Verification impossible", err_limite:"Le reseau Arc limite les requetes en ce moment. Attendez quelques secondes et reessayez.", err_recusado:"Vous avez refuse la signature dans le portefeuille.", err_saldo:"Solde insuffisant pour terminer.", liquidada:"Regle en", ver_tx:"Voir la transaction", tx_criada:"Demande creee onchain", tx_paga:"Paiement confirme onchain", tx_aprov:"Approbation confirmee", tx_cancel:"Annulation confirmee"
   }
 };
 let lang = "pt";
@@ -637,6 +916,10 @@ function aplicarIdioma() {
     el.placeholder = t(el.dataset.i18nPh);
   });
   // re-render dinamico
+  if (typeof montarAtalhos === "function") montarAtalhos();
+  if (typeof metPinta === "function") metPinta();
+  const _vr = $("btnVerRede");
+  if (_vr) _vr.textContent = t($("redeDados").classList.contains("aberto") ? "rede_ocultar" : "rede_ver");
   if (cobrancaAtual && !$("detCobranca").classList.contains("oculto")) buscarCobranca();
   if (conta) carregarHistorico();
 }
@@ -684,7 +967,11 @@ function linkTx(hash){
   return '<a href="'+EXPLORER+'/tx/'+hash+'" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;">'+curtinho+'</a>';
 }
 
-function iniciaLeitura(){ const p=new ethers.providers.JsonRpcProvider(RPC); quitaRO=new ethers.Contract(CONTRATO,ABI_QUITA,p); }
+let quitaROs = [];
+function iniciaLeitura(){
+  quitaROs = RPCS.map(u => new ethers.Contract(CONTRATO, ABI_QUITA, new ethers.providers.JsonRpcProvider(u)));
+  quitaRO = quitaROs[0] || null;
+}
 try{ iniciaLeitura(); }catch(e){ console.error("Falha ao iniciar leitura:",e); }
 
 /* Leitura sempre pelo RPC publico da Arc.
@@ -715,18 +1002,22 @@ async function ler(fn, ...args){
   const guardado = _cache.get(chave);
   if(guardado && (agora - guardado.quando) < _CACHE_MS) return guardado.valor;
 
-  // 2) tenta o RPC publico; se der limite, espera e tenta de novo
-  for(let tentativa=0; tentativa<3; tentativa++){
-    try{
-      if(!quitaRO) break;
-      const valor = await quitaRO[fn](...args);
-      _cache.set(chave,{valor,quando:Date.now()});
-      return valor;
-    }catch(e){
-      if(ehLimite(e) && tentativa<2){ await espera(700*(tentativa+1)); continue; }
-      console.warn("RPC publico falhou em "+fn+":", e.message);
-      break;
+  // 2) tenta cada RPC publico; se der limite, espera e tenta de novo
+  for(const ro of quitaROs){
+    let proximo = false;
+    for(let tentativa=0; tentativa<3; tentativa++){
+      try{
+        const valor = await ro[fn](...args);
+        quitaRO = ro;
+        _cache.set(chave,{valor,quando:Date.now()});
+        return valor;
+      }catch(e){
+        if(ehLimite(e) && tentativa<2){ await espera(700*(tentativa+1)); continue; }
+        console.warn("RPC publico falhou em "+fn+":", e.message);
+        proximo = true; break;
+      }
     }
+    if(!proximo) break;
   }
 
   // 3) ultimo recurso: provider da carteira
@@ -753,6 +1044,7 @@ async function conectar(){
   $("btnTrocar").classList.remove("oculto");
     toast(t("t_conectada"));
     carregarHistorico(true);
+    conferirRede();
   }catch(e){
     console.error("Falha ao conectar:",e);
     const m=String((e&&(e.reason||e.message))||"").slice(0,120);
@@ -764,12 +1056,8 @@ async function trocarRede(){
   try{
     await window.ethereum.request({method:"wallet_switchEthereumChain",params:[{chainId:CHAIN_HEX}]});
   }catch(err){
-    if(err.code===4902){
-      await window.ethereum.request({method:"wallet_addEthereumChain",params:[{
-        chainId:CHAIN_HEX, chainName:"Arc Testnet",
-        nativeCurrency:{name:"USDC",symbol:"USDC",decimals:18},
-        rpcUrls:[RPC], blockExplorerUrls:[EXPLORER]
-      }]});
+    if(err.code===4902 || err.code===-32603){
+      await window.ethereum.request({method:"wallet_addEthereumChain",params:[PARAMS_REDE]});
   } else throw err;
   }
 }
@@ -785,6 +1073,7 @@ async function aplicarConta(){
   limpaCache();
   if(cobrancaAtual) await buscarCobranca();
   carregarHistorico(true);
+  conferirRede();
 }
 
 function desconectarUI(){
@@ -860,7 +1149,7 @@ $("btnCriar").onclick=async()=>{
     $("linkBox").classList.add("mostra");
     limpaCache(); aviso($("avisoCriar"),"ok",t("tx_criada")+" · "+linkTx(rec.transactionHash));
     toast(t("t_criada")+" #"+novoId);
-    $("inValor").value=""; $("inDesc").value="";
+    $("inValor").value=""; $("inDesc").value=""; marcarAtalho();
   }catch(e){ console.error(e); aviso($("avisoCriar"),"erro",msgErro(e)); }
   finally{ btn.disabled=false; btn.textContent=t("btn_criar"); }
 };
@@ -868,11 +1157,15 @@ $("btnCopiar").onclick=()=>navigator.clipboard.writeText($("linkUrl").textConten
 $("btnAbrir").onclick=()=>{ const id=new URL($("linkUrl").textContent).searchParams.get("id"); irParaPagar(id); };
 
 // ---------- pagar ----------
-function irParaPagar(id){
+async function irParaPagar(id){
   document.querySelectorAll(".aba").forEach(x=>x.classList.remove("ativa"));
   document.querySelector('[data-aba="pagar"]').classList.add("ativa");
   ["cobrar","pagar","historico"].forEach(n=>$("painel-"+n).classList.toggle("oculto",n!=="pagar"));
-  $("inIdPagar").value=id; buscarCobranca();
+  $("inIdPagar").value=id;
+  await buscarCobranca();
+  // leva o pagador direto ao cartao da cobranca, sem precisar rolar a tela
+  const el=$("detCobranca");
+  if(el && !el.classList.contains("oculto") && el.scrollIntoView) el.scrollIntoView({behavior:"smooth",block:"center"});
 }
 $("btnBuscar").onclick=buscarCobranca;
 async function buscarCobranca(){
@@ -979,10 +1272,226 @@ async function renderLista(elId,ids,vazioMsg){
   });
 }
 
+// ---------- atalhos de descricao ----------
+/* Categorias sugeridas. O campo continua livre: da para digitar
+   qualquer descricao e o atalho correspondente acende sozinho. */
+const CATS = [
+  { k:"cat_gas",  ic:"\uD83D\uDD25" },
+  { k:"cat_agua", ic:"\uD83D\uDCA7" },
+  { k:"cat_luz",  ic:"\uD83D\uDCA1" },
+  { k:"cat_cel",  ic:"\uD83D\uDCF1" },
+  { k:"cat_trib", ic:"\uD83C\uDFDB\uFE0F" },
+  { k:"cat_out",  ic:"\uD83E\uDDFE" }
+];
+
+function montarAtalhos(){
+  const menu=$("comboMenu"); if(!menu) return;
+  menu.innerHTML="";
+  CATS.forEach(c=>{
+    const d=document.createElement("div");
+    d.className="combo-op"; d.dataset.chave=c.k;
+    const ic=document.createElement("span"); ic.className="ic"; ic.textContent=c.ic;
+    const rot=document.createElement("span"); rot.className="rot"; rot.textContent=t(c.k);
+    d.appendChild(ic); d.appendChild(rot);
+    d.addEventListener("mousedown", e=>e.preventDefault());  // nao rouba o foco
+    d.addEventListener("click", ()=>{
+      const inp=$("inDesc");
+      inp.value = (inp.value.trim().toLowerCase()===t(c.k).toLowerCase()) ? "" : t(c.k);
+      fecharCombo(); marcarAtalho();
+    });
+    menu.appendChild(d);
+  });
+  marcarAtalho();
+}
+function marcarAtalho(){
+  const v=(($("inDesc")||{}).value||"").trim().toLowerCase();
+  document.querySelectorAll("#comboMenu .combo-op").forEach(op=>{
+    op.classList.toggle("sel", t(op.dataset.chave).toLowerCase()===v);
+  });
+}
+function filtrarAtalhos(){
+  const v=(($("inDesc")||{}).value||"").trim().toLowerCase();
+  let visiveis=0;
+  document.querySelectorAll("#comboMenu .combo-op").forEach(op=>{
+    const bate = !v || t(op.dataset.chave).toLowerCase().indexOf(v)>=0;
+    op.style.display = bate ? "flex" : "none";
+    if(bate) visiveis++;
+  });
+  return visiveis;
+}
+function abrirCombo(){ if(filtrarAtalhos()>0) $("comboDesc").classList.add("aberto"); }
+function fecharCombo(){ const c=$("comboDesc"); if(c) c.classList.remove("aberto"); }
+
+$("inDesc").addEventListener("focus", abrirCombo);
+$("inDesc").addEventListener("click", abrirCombo);
+$("inDesc").addEventListener("input", ()=>{ marcarAtalho(); abrirCombo(); if(filtrarAtalhos()===0) fecharCombo(); });
+$("inDesc").addEventListener("keydown", e=>{ if(e.key==="Escape"){ fecharCombo(); e.stopPropagation(); } });
+$("comboSeta").addEventListener("click", ()=>{
+  const c=$("comboDesc");
+  if(c.classList.contains("aberto")) fecharCombo();
+  else { $("inDesc").focus(); abrirCombo(); }
+});
+document.addEventListener("click", e=>{ if(!e.target.closest("#comboDesc")) fecharCombo(); });
+
+// ---------- cartao da rede Arc (wallet_addEthereumChain) ----------
+$("rvRpc").textContent = RPCS[0];
+$("rvExp").href = EXPLORER;
+$("rvExp").textContent = EXPLORER.replace(/^https?:\/\//,"");
+$("rvFaucet").href = FAUCET;
+$("rvFaucet").textContent = FAUCET.replace(/^https?:\/\//,"");
+
+$("btnVerRede").onclick=()=>{
+  const d=$("redeDados"); const aberto=d.classList.toggle("aberto");
+  $("btnVerRede").textContent = t(aberto ? "rede_ocultar" : "rede_ver");
+};
+document.querySelectorAll("[data-copia]").forEach(b=>{
+  b.onclick=()=>{ navigator.clipboard.writeText($(b.dataset.copia).textContent.trim()).then(()=>toast(t("t_copiado"))); };
+});
+
+/* Pede a carteira para cadastrar a Arc Testnet. Se ja estiver cadastrada,
+   a carteira apenas troca para ela sem criar duplicada. */
+async function adicionarRede(){
+  if(!window.ethereum){ toast(t("t_semcart")); return; }
+  const b=$("btnAddRede"); b.disabled=true;
+  try{
+    await window.ethereum.request({ method:"wallet_addEthereumChain", params:[PARAMS_REDE] });
+    toast(t("t_rede_ok"));
+  }catch(err){
+    if(err && err.code===4001) toast(t("err_recusado"));
+    else if(err && /already/i.test(String(err.message||""))) toast(t("t_rede_ja"));
+    else bannerErro("Rede: "+msgErro(err));
+  }finally{ b.disabled=false; }
+}
+$("btnAddRede").onclick=adicionarRede;
+
+// ---------- metricas ao vivo da Arc ----------
+/* Tudo aqui sai de chamadas JSON-RPC cruas na Arc, sem servidor no meio.
+   Nada e estimado: bloco, tempo de bloco e TPS saem dos blocos de verdade,
+   e o preco do gas vem do eth_gasPrice. Numa testnet o TPS e baixo mesmo. */
+const MET_JANELA = 12;      // blocos usados na media
+const MET_PAUSA  = 9000;    // ms entre leituras
+
+let _metBlocos = [];
+let _metGas = null;
+let _metTimer = null;
+
+async function rpcCru(corpo, url){
+  const r = await fetch(url, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(corpo) });
+  if(!r.ok) throw new Error("HTTP "+r.status);
+  return r.json();
+}
+/* Tenta cada endpoint da lista antes de desistir. */
+async function rpcMet(chamadas){
+  const corpo = chamadas.map((c,i)=>({jsonrpc:"2.0", id:i, method:c[0], params:c[1]||[]}));
+  let ultimo;
+  for(const url of RPCS){
+    try{
+      const j = await rpcCru(corpo.length===1 ? corpo[0] : corpo, url);
+      const lista = Array.isArray(j) ? j.slice().sort((a,b)=>a.id-b.id) : [j];
+      if(lista.some(x=>x && x.error)) throw new Error("erro no rpc");
+      return lista.map(x=>x && x.result);
+    }catch(e){ ultimo=e; }
+  }
+  throw ultimo || new Error("RPC indisponivel");
+}
+
+function metGuarda(b){
+  if(!b || !b.number) return;
+  const num = parseInt(b.number,16);
+  if(_metBlocos.some(x=>x.n===num)) return;
+  _metBlocos.push({ n:num, t:parseInt(b.timestamp,16), txs:(b.transactions||[]).length });
+  _metBlocos.sort((a,b2)=>a.n-b2.n);
+  if(_metBlocos.length>MET_JANELA) _metBlocos = _metBlocos.slice(-MET_JANELA);
+}
+
+function metPinta(){
+  if(!_metBlocos.length) return;
+  const prim=_metBlocos[0], ult=_metBlocos[_metBlocos.length-1];
+  const seg = ult.t - prim.t;
+  const blocos = ult.n - prim.n;
+
+  $("mBloco").textContent = ult.n.toLocaleString(lang==="en"?"en-US":"pt-BR");
+  $("cardBloco").href = EXPLORER + "/block/" + ult.n;
+
+  if(blocos>0 && seg>0){
+    const tb = seg/blocos;
+    $("mTempo").innerHTML = tb.toFixed(2)+'<span class="un">s</span>';
+    $("mTempoD").textContent = t("met_tempo_d").replace("%s", blocos);
+    const txs = _metBlocos.slice(1).reduce((a,x)=>a+x.txs,0);
+    $("mTps").textContent = (txs/seg).toFixed(2);
+    $("mTpsD").textContent = t("met_tps_d").replace("%s", txs).replace("%t", seg);
+  }else{
+    $("mTempoD").textContent = t("met_juntando");
+    $("mTpsD").textContent = t("met_juntando");
+  }
+
+  if(_metGas!==null){
+    const gwei = _metGas/1e9;
+    $("mGas").innerHTML = gwei.toLocaleString(lang==="en"?"en-US":"pt-BR",{maximumFractionDigits:2})+'<span class="un">gwei</span>';
+    // gas nativo da Arc e USDC com 18 casas: custo = preco * gas / 1e18
+    const usdc = _metGas*21000/1e18;
+    $("mGasD").textContent = t("met_gas_d").replace("%s", usdc.toFixed(4));
+  }
+}
+
+async function metLer(inicial){
+  try{
+    if(inicial){
+      const [nHex, gas] = await rpcMet([["eth_blockNumber"],["eth_gasPrice"]]);
+      _metGas = parseInt(gas,16);
+      const topo = parseInt(nHex,16);
+      const pedidos = [];
+      for(let i=MET_JANELA-1;i>=0;i--){
+        if(topo-i < 0) continue;
+        pedidos.push(["eth_getBlockByNumber",["0x"+(topo-i).toString(16), false]]);
+      }
+      (await rpcMet(pedidos)).forEach(metGuarda);
+    }else{
+      const [b, gas] = await rpcMet([["eth_getBlockByNumber",["latest",false]],["eth_gasPrice"]]);
+      _metGas = parseInt(gas,16);
+      metGuarda(b);
+    }
+    $("metricas").classList.remove("oculto");
+    metPinta();
+  }catch(e){
+    console.warn("Metricas indisponiveis:", e.message);
+  }
+}
+
+function metIniciar(){
+  $("metLink").href = EXPLORER;
+  metLer(true);
+  if(_metTimer) clearInterval(_metTimer);
+  _metTimer = setInterval(()=>{ if(!document.hidden) metLer(false); }, MET_PAUSA);
+}
+// volta a ler assim que o usuario reabre a aba
+document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) metLer(false); });
+
+// ---------- vigia de rede ----------
+/* Avisa antes da hora: se a carteira estiver em outra rede, o pagador
+   descobre agora e nao so quando clicar em pagar. eth_chainId nao pede
+   permissao, entao funciona mesmo sem a carteira estar conectada ao site. */
+function mostrarAlertaRede(mostrar){
+  const a=$("alertaRede"); if(a) a.classList.toggle("oculto", !mostrar);
+  const c=document.querySelector(".rede-card"); if(c) c.classList.toggle("alerta", mostrar);
+}
+async function conferirRede(){
+  if(!window.ethereum){ mostrarAlertaRede(false); return true; }
+  let ok=true;
+  try{
+    const hex=await window.ethereum.request({method:"eth_chainId"});
+    ok = parseInt(hex,16)===CHAIN_ID;
+  }catch(e){ ok=true; }   // na duvida, nao incomoda o usuario
+  mostrarAlertaRede(!ok);
+  return ok;
+}
+
 // ---------- roteamento por link ----------
 window.addEventListener("load",async()=>{
   aplicarIdioma();
   registrarListeners();
+  conferirRede();
+  metIniciar();
   const id=new URLSearchParams(location.search).get("id");
   if(id){
     if(window.ethereum&&window.ethereum.selectedAddress){ await conectar(); }
