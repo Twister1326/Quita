@@ -173,7 +173,9 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   .aba:hover { color: var(--texto); }
   .aba.ativa { background: var(--grad); color: #fff; box-shadow: 0 4px 14px rgba(19,97,240,.35); }
 
-  main { max-width: 640px; margin: 0 auto; padding: 20px 16px 60px; position: relative; z-index: 1; }
+  /* acima do cartao da rede e do rodape: sem isso, o menu de atalhos
+     abre por baixo deles, porque empate de z-index quem vem depois vence */
+  main { max-width: 640px; margin: 0 auto; padding: 20px 16px 60px; position: relative; z-index: 10; }
   .cartao {
     background: linear-gradient(180deg, var(--carta) 0%, var(--carta-2) 100%);
     border: 1px solid var(--linha); border-radius: var(--raio);
