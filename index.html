@@ -214,8 +214,28 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 40;
     background: var(--carta-2); border: 1.5px solid var(--linha-2);
     border-radius: 12px; padding: 5px; box-shadow: var(--sombra);
-    max-height: 258px; overflow-y: auto; display: none;
+    overflow: hidden; display: none;
   }
+  /* a barra de rolagem do sistema fica escondida; quem avisa que ha mais
+     itens sao as duas setinhas, e so quando existe o que rolar */
+  .combo-lista {
+    max-height: 340px; overflow-y: auto;
+    scrollbar-width: none; -ms-overflow-style: none;
+  }
+  .combo-lista::-webkit-scrollbar { display: none; }
+  .combo-seta {
+    position: absolute; left: 0; right: 0; height: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; color: var(--texto-min);
+    pointer-events: none; opacity: 0; transition: opacity .16s;
+  }
+  .combo-seta.cima {
+    top: 0; background: linear-gradient(180deg, var(--carta-2) 45%, transparent 100%);
+  }
+  .combo-seta.baixo {
+    bottom: 0; background: linear-gradient(0deg, var(--carta-2) 45%, transparent 100%);
+  }
+  .combo-seta.mostra { opacity: 1; }
   .combo.aberto .combo-menu { display: block; }
   .combo-op {
     display: flex; align-items: center; gap: 10px;
@@ -550,7 +570,11 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       <div class="combo" id="comboDesc">
         <input type="text" id="inDesc" maxlength="200" autocomplete="off" data-i18n-ph="ph_desc" placeholder="Ex.: Consultoria de outubro" />
         <button type="button" class="seta" id="comboSeta" aria-label="Atalhos de descricao">&#9660;</button>
-        <div class="combo-menu" id="comboMenu"></div>
+        <div class="combo-menu" id="comboMenu">
+          <div class="combo-lista" id="comboLista"></div>
+          <span class="combo-seta cima" id="setaCima">&#9650;</span>
+          <span class="combo-seta baixo" id="setaBaixo">&#9660;</span>
+        </div>
       </div>
 
       <button class="btn-primario" id="btnCriar" data-i18n="btn_criar">Criar cobranca</button>
@@ -1285,7 +1309,7 @@ const CATS = [
 ];
 
 function montarAtalhos(){
-  const menu=$("comboMenu"); if(!menu) return;
+  const menu=$("comboLista"); if(!menu) return;
   menu.innerHTML="";
   CATS.forEach(c=>{
     const d=document.createElement("div");
@@ -1302,6 +1326,16 @@ function montarAtalhos(){
     menu.appendChild(d);
   });
   marcarAtalho();
+  atualizaSetas();
+}
+
+/* Mostra a seta de cima se ha item acima do que esta visivel, e a de baixo
+   se ha item abaixo. Com poucas opcoes nenhuma das duas aparece. */
+function atualizaSetas(){
+  const l=$("comboLista"); if(!l) return;
+  const sobra = l.scrollHeight - l.clientHeight;
+  $("setaCima").classList.toggle("mostra", sobra>2 && l.scrollTop>2);
+  $("setaBaixo").classList.toggle("mostra", sobra>2 && l.scrollTop < sobra-2);
 }
 function marcarAtalho(){
   const v=(($("inDesc")||{}).value||"").trim().toLowerCase();
@@ -1319,9 +1353,13 @@ function filtrarAtalhos(){
   });
   return visiveis;
 }
-function abrirCombo(){ if(filtrarAtalhos()>0) $("comboDesc").classList.add("aberto"); }
+function abrirCombo(){
+  if(filtrarAtalhos()>0){ $("comboDesc").classList.add("aberto"); atualizaSetas(); }
+}
 function fecharCombo(){ const c=$("comboDesc"); if(c) c.classList.remove("aberto"); }
 
+$("comboLista").addEventListener("scroll", atualizaSetas);
+window.addEventListener("resize", atualizaSetas);
 $("inDesc").addEventListener("focus", abrirCombo);
 $("inDesc").addEventListener("click", abrirCombo);
 $("inDesc").addEventListener("input", ()=>{ marcarAtalho(); abrirCombo(); if(filtrarAtalhos()===0) fecharCombo(); });
