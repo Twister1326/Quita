@@ -733,7 +733,7 @@ const I18N = {
     met_titulo:"Dados ao vivo do RPC da Arc Testnet", met_ver:"ver na arcscan",
     met_bloco:"Bloco", met_bloco_d:"Ultimo bloco produzido",
     met_tempo:"Tempo de bloco", met_tempo_d:"Media dos ultimos %s blocos",
-    met_tps:"Transacoes/s", met_tps_d:"%s transacoes em %ts",
+    met_tps:"Transacoes/s", met_tps_d:"%s tx por bloco em %t blocos lidos",
     met_gas:"Preco do gas", met_gas_d:"~%s USDC por transferencia simples",
     met_juntando:"Juntando blocos...",
     rede_titulo:"Rede Arc Testnet", rede_sub:"Adicione a rede na carteira em um clique.",
@@ -778,7 +778,7 @@ const I18N = {
     met_titulo:"Live data from the Arc Testnet RPC", met_ver:"view on arcscan",
     met_bloco:"Block", met_bloco_d:"Latest block produced",
     met_tempo:"Block time", met_tempo_d:"Average of the last %s blocks",
-    met_tps:"Transactions/s", met_tps_d:"%s transactions in %ts",
+    met_tps:"Transactions/s", met_tps_d:"%s tx per block across %t sampled",
     met_gas:"Gas price", met_gas_d:"~%s USDC per simple transfer",
     met_juntando:"Collecting blocks...",
     rede_titulo:"Arc Testnet network", rede_sub:"Add the network to your wallet in one click.",
@@ -823,7 +823,7 @@ const I18N = {
     met_titulo:"Datos en vivo del RPC de Arc Testnet", met_ver:"ver en arcscan",
     met_bloco:"Bloque", met_bloco_d:"Ultimo bloque producido",
     met_tempo:"Tiempo de bloque", met_tempo_d:"Promedio de los ultimos %s bloques",
-    met_tps:"Transacciones/s", met_tps_d:"%s transacciones en %ts",
+    met_tps:"Transacciones/s", met_tps_d:"%s tx por bloque en %t leidos",
     met_gas:"Precio del gas", met_gas_d:"~%s USDC por transferencia simple",
     met_juntando:"Juntando bloques...",
     rede_titulo:"Red Arc Testnet", rede_sub:"Agrega la red a tu billetera con un clic.",
@@ -868,7 +868,7 @@ const I18N = {
     met_titulo:"Donnees en direct du RPC Arc Testnet", met_ver:"voir sur arcscan",
     met_bloco:"Bloc", met_bloco_d:"Dernier bloc produit",
     met_tempo:"Temps de bloc", met_tempo_d:"Moyenne des %s derniers blocs",
-    met_tps:"Transactions/s", met_tps_d:"%s transactions en %ts",
+    met_tps:"Transactions/s", met_tps_d:"%s tx par bloc sur %t lus",
     met_gas:"Prix du gas", met_gas_d:"~%s USDC par transfert simple",
     met_juntando:"Collecte des blocs...",
     rede_titulo:"Reseau Arc Testnet", rede_sub:"Ajoutez le reseau a votre portefeuille en un clic.",
@@ -1417,9 +1417,15 @@ function metPinta(){
     const tb = seg/blocos;
     $("mTempo").innerHTML = tb.toFixed(2)+'<span class="un">s</span>';
     $("mTempoD").textContent = t("met_tempo_d").replace("%s", blocos);
-    const txs = _metBlocos.slice(1).reduce((a,x)=>a+x.txs,0);
-    $("mTps").textContent = (txs/seg).toFixed(2);
-    $("mTpsD").textContent = t("met_tps_d").replace("%s", txs).replace("%t", seg);
+    /* So temos a contagem de tx dos blocos que chegamos a ler; entre uma
+       leitura e outra a rede produz varios blocos que nunca vimos. Por isso
+       o TPS sai da media por bloco amostrado dividida pelo tempo de bloco,
+       e nao das tx totais divididas pela janela inteira. */
+    const amostra = _metBlocos.length;
+    const txs = _metBlocos.reduce((a,x)=>a+x.txs,0);
+    const txPorBloco = txs/amostra;
+    $("mTps").textContent = (txPorBloco/tb).toFixed(2);
+    $("mTpsD").textContent = t("met_tps_d").replace("%s", txPorBloco.toFixed(1)).replace("%t", amostra);
   }else{
     $("mTempoD").textContent = t("met_juntando");
     $("mTpsD").textContent = t("met_juntando");
