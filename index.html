@@ -491,7 +491,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     <div class="logo-mark"></div>
     <div>
       <b>Quita</b>
-      <span class="tag" data-i18n="rede_tag"> · Arc Testnet</span>
+      <span class="tag" data-i18n="rede_tag"> · Arc</span>
     </div>
   </div>
 <button class="btn-carteira" id="btnCarteira" data-i18n="conectar">Conectar carteira</button>
@@ -502,7 +502,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   <div class="alerta-rede">
     <div class="ar-txt">
       <b data-i18n="ar_titulo">Carteira em outra rede</b>
-      <small data-i18n="ar_sub">Troque para a Arc Testnet antes de criar ou pagar uma cobranca.</small>
+      <small data-i18n="ar_sub">Troque para a Arc antes de criar ou pagar uma cobranca.</small>
     </div>
   </div>
 </div>
@@ -516,8 +516,8 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 <section class="metricas oculto" id="metricas">
   <div class="met-topo">
     <span class="vivo"></span>
-    <span data-i18n="met_titulo">Dados ao vivo do RPC da Arc Testnet</span>
-    <a id="metLink" href="#" target="_blank" rel="noopener" data-i18n="met_ver">ver na arcscan</a>
+    <span data-i18n="met_titulo">Dados ao vivo do RPC da Arc</span>
+    <a id="metLink" href="#" target="_blank" rel="noopener" data-i18n="met_ver">ver no explorer</a>
   </div>
   <div class="met-grade">
     <a class="met-card" id="cardBloco" href="#" target="_blank" rel="noopener">
@@ -660,7 +660,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   <div class="rede-card">
     <div class="rede-topo">
       <div class="rede-txt">
-        <b data-i18n="rede_titulo">Rede Arc Testnet</b>
+        <b data-i18n="rede_titulo">Rede Arc</b>
         <small data-i18n="rede_sub">Adicione a rede na carteira em um clique.</small>
       </div>
       <button class="btn-rede" id="btnAddRede" data-i18n="rede_btn">Adicionar a carteira</button>
@@ -669,11 +669,11 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     <div class="rede-dados" id="redeDados">
       <div class="rede-linha">
         <span class="rk" data-i18n="rede_k_nome">Rede</span>
-        <span class="rv">Arc Testnet</span>
+        <span class="rv">Arc</span>
       </div>
       <div class="rede-linha">
         <span class="rk">Chain ID</span>
-        <span class="rv" id="rvChain">5042002</span>
+        <span class="rv" id="rvChain">5042</span>
         <button class="rc" data-copia="rvChain" data-i18n="copiar">Copiar</button>
       </div>
       <div class="rede-linha">
@@ -687,11 +687,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       </div>
       <div class="rede-linha">
         <span class="rk" data-i18n="rede_k_exp">Explorador</span>
-        <span class="rv"><a id="rvExp" href="#" target="_blank" rel="noopener">testnet.arcscan.app</a></span>
-      </div>
-      <div class="rede-linha">
-        <span class="rk">Faucet</span>
-        <span class="rv"><a id="rvFaucet" href="#" target="_blank" rel="noopener">faucet.circle.com</a></span>
+        <span class="rv"><a id="rvExp" href="#" target="_blank" rel="noopener">explorer.arc.io</a></span>
       </div>
     </div>
   </div>
@@ -700,7 +696,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 <div class="rodape">
   <span data-i18n="rodape">Contrato verificado</span>:
   <a id="linkContrato" href="#" target="_blank" rel="noopener">0xF197…28D7</a>
-  · Arc Testnet
+  · Arc
 </div>
 
 <div class="toast" id="toast"></div>
@@ -709,22 +705,22 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 // ======================================================================
 //  QUITA v2 — frontend
 // ======================================================================
-const CONTRATO = "0xF1979d37646266f3C5C2c250F0F8798D6E0f28D7";
+/* Contrato Quita na Arc Mainnet (chain 5042), verificado no Sourcify */
+const CONTRATO = "0xFeAE11F8E1249E9Add5cdeAAC239a5eE7fb43ec6";
 const USDC = "0x3600000000000000000000000000000000000000";
-const EURC = "0x89B50855Aa3bE2F677cD6303Cec089B5F319D72a";
-const CHAIN_ID = 5042002;
-const CHAIN_HEX = "0x4CEF52"; // 5042002
+const EURC = "0xbEf5f6d51CB62b58e6A8f77868681825C6fe21c1";
+const CHAIN_ID = 5042;
+const CHAIN_HEX = "0x13B2"; // 5042
 /* Endpoints publicos da Arc, conforme docs.arc.io/integrate.
    O primeiro e o oficial; o segundo fica como reserva de leitura. */
-const RPCS = ["https://rpc.testnet.arc.io", "https://rpc.testnet.arc.network"];
+const RPCS = ["https://rpc.mainnet.arc.io"];
 const RPC = RPCS[0];
-const EXPLORER = "https://testnet.arcscan.app";
-const FAUCET = "https://faucet.circle.com";
+const EXPLORER = "https://explorer.arc.io";
 /* Parametros exatos de wallet_addEthereumChain (docs.arc.io/integrate).
    USDC e o token nativo de gas da Arc e usa 18 casas no saldo nativo. */
 const PARAMS_REDE = {
   chainId: CHAIN_HEX,
-  chainName: "Arc Testnet",
+  chainName: "Arc",
   nativeCurrency: { name: "USDC", symbol: "USDC", decimals: 18 },
   rpcUrls: RPCS,
   blockExplorerUrls: [EXPLORER]
@@ -750,20 +746,20 @@ const ABI_ERC20 = [
 // ---------- i18n ----------
 const I18N = {
   pt: {
-    conectar:"Conectar carteira", rede_tag:" · Arc Testnet", rede_ativa:"Rede Arc ativa · liquidacao instantanea",
+    conectar:"Conectar carteira", rede_tag:" · Arc", rede_ativa:"Rede Arc ativa · liquidacao instantanea",
     hero_titulo:'Cobre em stablecoin e <span class="destaque">saiba antes</span> se o pagamento vai passar',
     hero_sub:"Crie uma cobranca, compartilhe o link. O pagador ve se pode pagar antes de gastar gas. A liquidacao cai direto na sua carteira.",
     cat_gas:"Conta de gas", cat_agua:"Conta de agua", cat_luz:"Conta de luz",
     cat_cel:"Celular / Internet", cat_trib:"Tributos estaduais", cat_out:"Cobrancas diversas",
     dica_desc:"(toque para ver os atalhos ou escreva a sua)",
-    met_titulo:"Dados ao vivo do RPC da Arc Testnet", met_ver:"ver na arcscan",
+    met_titulo:"Dados ao vivo do RPC da Arc", met_ver:"ver no explorer",
     met_bloco:"Bloco", met_bloco_d:"Ultimo bloco produzido",
     met_tempo:"Tempo de bloco", met_tempo_d:"Media dos ultimos %s blocos",
     met_tps:"Transacoes/s", met_tps_d:"%s tx por bloco em %t blocos lidos",
     met_gas:"Preco do gas", met_gas_d:"~%s USDC por transferencia simples",
     met_juntando:"Juntando blocos...",
-    rede_titulo:"Rede Arc Testnet", rede_sub:"Adicione a rede na carteira em um clique.",
-    ar_titulo:"Carteira em outra rede", ar_sub:"Troque para a Arc Testnet antes de criar ou pagar uma cobranca.",
+    rede_titulo:"Rede Arc", rede_sub:"Adicione a rede na carteira em um clique.",
+    ar_titulo:"Carteira em outra rede", ar_sub:"Troque para a Arc antes de criar ou pagar uma cobranca.",
     rede_btn:"Adicionar a carteira", rede_ver:"Ver dados da rede", rede_ocultar:"Ocultar dados da rede",
     rede_k_nome:"Rede", rede_k_moeda:"Moeda", rede_k_exp:"Explorador", copiar:"Copiar",
     t_rede_ok:"Rede Arc adicionada na carteira", t_rede_ja:"A carteira ja esta na rede Arc",
@@ -782,7 +778,7 @@ const I18N = {
     rodape:"Contrato verificado",
     st_aberta:"Aberta", st_paga:"Paga", st_cancelada:"Cancelada",
     sem_pronto:"Pronto para pagar", sem_pronto_d:"Saldo e aprovacao conferidos. E so confirmar.",
-    sem_falta:"Falta aprovar o token", sem_falta_d:"Voce tem saldo, mas precisa liberar o TOKEN uma vez.",
+    sem_falta:"Falta aprovar o token", sem_falta_d:"Voce tem saldo, mas precisa liberar o TOKEN uma vez.", sem_gas:"Saldo nao cobre valor + taxa", sem_gas_d:"Na Arc a taxa de rede sai do mesmo saldo em USDC. Adicione um pouco mais de USDC para concluir.",
     sem_conecte:"Conecte a carteira", sem_conecte_d:"Preciso da sua carteira para checar saldo e aprovacao",
     sem_sua:"Esta cobranca e sua", sem_sua_d:"Voce nao pode pagar a si mesmo, mas pode cancela-la",
     sem_paga:"Cobranca paga", sem_cancel:"Cobranca cancelada", sem_cancel_d:"Esta cobranca foi cancelada pelo recebedor",
@@ -795,20 +791,20 @@ const I18N = {
     sem_erro:"Nao foi possivel verificar", err_limite:"A rede Arc esta com limite de consultas no momento. Espere alguns segundos e tente de novo.", err_recusado:"Voce recusou a assinatura na carteira.", err_saldo:"Saldo insuficiente para concluir.", liquidada:"Liquidada em", ver_tx:"Ver transacao", tx_criada:"Cobranca criada onchain", tx_paga:"Pagamento confirmado on-chain", tx_aprov:"Aprovacao confirmada", tx_cancel:"Cancelamento confirmado"
   },
   en: {
-    conectar:"Connect wallet", rede_tag:" · Arc Testnet", rede_ativa:"Arc network live · instant settlement",
+    conectar:"Connect wallet", rede_tag:" · Arc", rede_ativa:"Arc network live · instant settlement",
     hero_titulo:'Bill in stablecoin and <span class="destaque">know upfront</span> if the payment will go through',
     hero_sub:"Create a request, share the link. The payer sees if they can pay before spending gas. Settlement lands straight in your wallet.",
     cat_gas:"Gas bill", cat_agua:"Water bill", cat_luz:"Electricity bill",
     cat_cel:"Phone / Internet", cat_trib:"State taxes", cat_out:"Other charges",
     dica_desc:"(tap for shortcuts or write your own)",
-    met_titulo:"Live data from the Arc Testnet RPC", met_ver:"view on arcscan",
+    met_titulo:"Live data from the Arc RPC", met_ver:"view on explorer",
     met_bloco:"Block", met_bloco_d:"Latest block produced",
     met_tempo:"Block time", met_tempo_d:"Average of the last %s blocks",
     met_tps:"Transactions/s", met_tps_d:"%s tx per block across %t sampled",
     met_gas:"Gas price", met_gas_d:"~%s USDC per simple transfer",
     met_juntando:"Collecting blocks...",
-    rede_titulo:"Arc Testnet network", rede_sub:"Add the network to your wallet in one click.",
-    ar_titulo:"Wallet on another network", ar_sub:"Switch to Arc Testnet before creating or paying a request.",
+    rede_titulo:"Arc network", rede_sub:"Add the network to your wallet in one click.",
+    ar_titulo:"Wallet on another network", ar_sub:"Switch to Arc before creating or paying a request.",
     rede_btn:"Add to wallet", rede_ver:"Show network details", rede_ocultar:"Hide network details",
     rede_k_nome:"Network", rede_k_moeda:"Currency", rede_k_exp:"Explorer", copiar:"Copy",
     t_rede_ok:"Arc network added to the wallet", t_rede_ja:"The wallet is already on Arc",
@@ -827,7 +823,7 @@ const I18N = {
     rodape:"Verified contract",
     st_aberta:"Open", st_paga:"Paid", st_cancelada:"Canceled",
     sem_pronto:"Ready to pay", sem_pronto_d:"Balance and approval checked. Just confirm.",
-    sem_falta:"Token approval needed", sem_falta_d:"You have balance, but must approve TOKEN once.",
+    sem_falta:"Token approval needed", sem_falta_d:"You have balance, but must approve TOKEN once.", sem_gas:"Balance does not cover amount + fee", sem_gas_d:"On Arc the network fee comes out of the same USDC balance. Add a little more USDC to complete.",
     sem_conecte:"Connect the wallet", sem_conecte_d:"I need your wallet to check balance and approval",
     sem_sua:"This request is yours", sem_sua_d:"You can't pay yourself, but you can cancel it",
     sem_paga:"Request paid", sem_cancel:"Request canceled", sem_cancel_d:"This request was canceled by the receiver",
@@ -840,20 +836,20 @@ const I18N = {
     sem_erro:"Could not verify", err_limite:"The Arc network is rate-limiting requests right now. Wait a few seconds and try again.", err_recusado:"You rejected the signature in the wallet.", err_saldo:"Insufficient balance to complete.", liquidada:"Settled in", ver_tx:"View transaction", tx_criada:"Request created onchain", tx_paga:"Payment confirmed onchain", tx_aprov:"Approval confirmed", tx_cancel:"Cancellation confirmed"
   },
   es: {
-    conectar:"Conectar billetera", rede_tag:" · Arc Testnet", rede_ativa:"Red Arc activa · liquidacion instantanea",
+    conectar:"Conectar billetera", rede_tag:" · Arc", rede_ativa:"Red Arc activa · liquidacion instantanea",
     hero_titulo:'Cobra en stablecoin y <span class="destaque">confirma antes</span> si el pago va a pasar',
     hero_sub:"Crea un cobro, comparte el enlace. El pagador ve si puede pagar antes de gastar gas. La liquidacion llega directo a tu billetera.",
     cat_gas:"Cuenta de gas", cat_agua:"Cuenta de agua", cat_luz:"Cuenta de luz",
     cat_cel:"Celular / Internet", cat_trib:"Impuestos estatales", cat_out:"Cobros diversos",
     dica_desc:"(toca para ver los atajos o escribe la tuya)",
-    met_titulo:"Datos en vivo del RPC de Arc Testnet", met_ver:"ver en arcscan",
+    met_titulo:"Datos en vivo del RPC de Arc", met_ver:"ver en el explorer",
     met_bloco:"Bloque", met_bloco_d:"Ultimo bloque producido",
     met_tempo:"Tiempo de bloque", met_tempo_d:"Promedio de los ultimos %s bloques",
     met_tps:"Transacciones/s", met_tps_d:"%s tx por bloque en %t leidos",
     met_gas:"Precio del gas", met_gas_d:"~%s USDC por transferencia simple",
     met_juntando:"Juntando bloques...",
-    rede_titulo:"Red Arc Testnet", rede_sub:"Agrega la red a tu billetera con un clic.",
-    ar_titulo:"Billetera en otra red", ar_sub:"Cambia a Arc Testnet antes de crear o pagar un cobro.",
+    rede_titulo:"Red Arc", rede_sub:"Agrega la red a tu billetera con un clic.",
+    ar_titulo:"Billetera en otra red", ar_sub:"Cambia a Arc antes de crear o pagar un cobro.",
     rede_btn:"Agregar a la billetera", rede_ver:"Ver datos de la red", rede_ocultar:"Ocultar datos de la red",
     rede_k_nome:"Red", rede_k_moeda:"Moneda", rede_k_exp:"Explorador", copiar:"Copiar",
     t_rede_ok:"Red Arc agregada a la billetera", t_rede_ja:"La billetera ya esta en la red Arc",
@@ -872,7 +868,7 @@ const I18N = {
     rodape:"Contrato verificado",
     st_aberta:"Abierto", st_paga:"Pagado", st_cancelada:"Cancelado",
     sem_pronto:"Listo para pagar", sem_pronto_d:"Saldo y aprobacion verificados. Solo confirma.",
-    sem_falta:"Falta aprobar el token", sem_falta_d:"Tienes saldo, pero debes liberar el TOKEN una vez.",
+    sem_falta:"Falta aprobar el token", sem_falta_d:"Tienes saldo, pero debes liberar el TOKEN una vez.", sem_gas:"El saldo no cubre importe + comision", sem_gas_d:"En Arc la comision de red sale del mismo saldo en USDC. Agrega un poco mas de USDC para completar.",
     sem_conecte:"Conecta la billetera", sem_conecte_d:"Necesito tu billetera para revisar saldo y aprobacion",
     sem_sua:"Este cobro es tuyo", sem_sua_d:"No puedes pagarte a ti mismo, pero puedes cancelarlo",
     sem_paga:"Cobro pagado", sem_cancel:"Cobro cancelado", sem_cancel_d:"Este cobro fue cancelado por el receptor",
@@ -885,20 +881,20 @@ const I18N = {
     sem_erro:"No se pudo verificar", err_limite:"La red Arc esta limitando consultas ahora. Espera unos segundos e intenta de nuevo.", err_recusado:"Rechazaste la firma en la billetera.", err_saldo:"Saldo insuficiente para completar.", liquidada:"Liquidado en", ver_tx:"Ver transaccion", tx_criada:"Cobro creado onchain", tx_paga:"Pago confirmado onchain", tx_aprov:"Aprobacion confirmada", tx_cancel:"Cancelacion confirmada"
   },
   fr: {
-    conectar:"Connecter le portefeuille", rede_tag:" · Arc Testnet", rede_ativa:"Reseau Arc actif · reglement instantane",
+    conectar:"Connecter le portefeuille", rede_tag:" · Arc", rede_ativa:"Reseau Arc actif · reglement instantane",
     hero_titulo:'Facturez en stablecoin et <span class="destaque">sachez d\'avance</span> si le paiement va passer',
     hero_sub:"Creez une demande, partagez le lien. Le payeur voit s'il peut payer avant de depenser du gas. Le reglement arrive direct dans votre portefeuille.",
     cat_gas:"Facture de gaz", cat_agua:"Facture d'eau", cat_luz:"Facture d'electricite",
     cat_cel:"Mobile / Internet", cat_trib:"Impots locaux", cat_out:"Autres factures",
     dica_desc:"(touchez pour les raccourcis ou ecrivez la votre)",
-    met_titulo:"Donnees en direct du RPC Arc Testnet", met_ver:"voir sur arcscan",
+    met_titulo:"Donnees en direct du RPC Arc", met_ver:"voir sur l'explorer",
     met_bloco:"Bloc", met_bloco_d:"Dernier bloc produit",
     met_tempo:"Temps de bloc", met_tempo_d:"Moyenne des %s derniers blocs",
     met_tps:"Transactions/s", met_tps_d:"%s tx par bloc sur %t lus",
     met_gas:"Prix du gas", met_gas_d:"~%s USDC par transfert simple",
     met_juntando:"Collecte des blocs...",
-    rede_titulo:"Reseau Arc Testnet", rede_sub:"Ajoutez le reseau a votre portefeuille en un clic.",
-    ar_titulo:"Portefeuille sur un autre reseau", ar_sub:"Passez sur Arc Testnet avant de creer ou payer une demande.",
+    rede_titulo:"Reseau Arc", rede_sub:"Ajoutez le reseau a votre portefeuille en un clic.",
+    ar_titulo:"Portefeuille sur un autre reseau", ar_sub:"Passez sur Arc avant de creer ou payer une demande.",
     rede_btn:"Ajouter au portefeuille", rede_ver:"Voir les details du reseau", rede_ocultar:"Masquer les details du reseau",
     rede_k_nome:"Reseau", rede_k_moeda:"Devise", rede_k_exp:"Explorateur", copiar:"Copier",
     t_rede_ok:"Reseau Arc ajoute au portefeuille", t_rede_ja:"Le portefeuille est deja sur Arc",
@@ -917,7 +913,7 @@ const I18N = {
     rodape:"Contrat verifie",
     st_aberta:"Ouverte", st_paga:"Payee", st_cancelada:"Annulee",
     sem_pronto:"Pret a payer", sem_pronto_d:"Solde et approbation verifies. Il suffit de confirmer.",
-    sem_falta:"Approbation du token requise", sem_falta_d:"Vous avez le solde, mais devez autoriser le TOKEN une fois.",
+    sem_falta:"Approbation du token requise", sem_falta_d:"Vous avez le solde, mais devez autoriser le TOKEN une fois.", sem_gas:"Solde insuffisant pour montant + frais", sem_gas_d:"Sur Arc les frais de reseau proviennent du meme solde USDC. Ajoutez un peu plus d USDC pour finaliser.",
     sem_conecte:"Connectez le portefeuille", sem_conecte_d:"J'ai besoin de votre portefeuille pour verifier solde et approbation",
     sem_sua:"Cette demande est la votre", sem_sua_d:"Vous ne pouvez pas vous payer, mais vous pouvez l'annuler",
     sem_paga:"Demande payee", sem_cancel:"Demande annulee", sem_cancel_d:"Cette demande a ete annulee par le beneficiaire",
@@ -983,6 +979,7 @@ const fmt = (v) => ethers.utils.formatUnits(v, DECIMAIS);
 const curto = (a) => a ? a.slice(0,6)+"…"+a.slice(-4) : "";
 
 document.getElementById("linkContrato").href = EXPLORER + "/address/" + CONTRATO;
+document.getElementById("linkContrato").textContent = CONTRATO.slice(0,6)+"\u2026"+CONTRATO.slice(-4);
 
 function toast(msg){ const el=$("toast"); el.textContent=msg; el.classList.add("mostra"); setTimeout(()=>el.classList.remove("mostra"),2600); }
 function aviso(el,tipo,msg){ el.className="aviso mostra "+tipo; el.innerHTML=msg; }
@@ -1220,6 +1217,34 @@ function mostrarCobranca(c){
   avaliarPagamento();
 }
 function setSemaforo(estado,titulo,detalhe){ const s=$("semaforo"); s.className="semaforo "+estado; $("semTitulo").textContent=titulo; $("semDetalhe").textContent=detalhe; }
+/* ---------- folga de gas ----------
+   Na Arc o USDC nativo (gas) e o USDC ERC-20 sao o MESMO saldo.
+   Entao, numa cobranca em USDC, ter saldo igual ao valor nao basta:
+   a taxa sai do mesmo dinheiro e a transacao reverte. Em EURC os
+   saldos sao independentes e esta checagem nao se aplica. */
+const MARGEM_GAS = 130; // % sobre a estimativa
+const PISO_GAS = ethers.utils.parseUnits("20","gwei"); // piso da mempool da Arc
+async function folgaGasOk(){
+  if(Number(cobrancaAtual.moeda) !== 0) return true;
+  try{
+    const memo = $("inMemo").value.trim();
+    const g = await quita.estimateGas.pagar(cobrancaAtual.id, memo);
+    /* A Arc descarta silenciosamente transacoes com maxFeePerGas abaixo
+       de 20 Gwei: nao ha recibo nem erro, a transacao simplesmente some.
+       Entao a estimativa nunca pode usar um preco menor que esse piso. */
+    let preco = await provider.getGasPrice();
+    if(preco.lt(PISO_GAS)) preco = PISO_GAS;
+    const taxa = g.mul(preco).mul(MARGEM_GAS).div(100);
+    const saldo = await provider.getBalance(conta);
+    /* valor da cobranca vem em 6 casas; saldo nativo em 18 */
+    const valorNativo = ethers.BigNumber.from(cobrancaAtual.valor).mul(ethers.BigNumber.from(10).pow(12));
+    return saldo.gte(valorNativo.add(taxa));
+  }catch(e){
+    console.warn("folgaGas", e);
+    if(/insufficient/i.test(String(e && (e.message||e)))) return false;
+    return true; /* na duvida nao bloqueia: o podePagar ja aprovou */
+  }
+}
 let _avalSeq=0;
 async function avaliarPagamento(){
   const seq=++_avalSeq;
@@ -1230,7 +1255,11 @@ async function avaliarPagamento(){
   try{
     const [ok,motivo]=await ler("podePagar",cobrancaAtual.id,conta);
     if(seq!==_avalSeq) return;
-    if(ok){ setSemaforo("pronto",t("sem_pronto"),t("sem_pronto_d")); $("btnPagar").classList.remove("oculto"); $("btnAprovar").classList.add("oculto"); }
+    if(ok){
+      const folga=await folgaGasOk();
+      if(seq!==_avalSeq) return;
+      if(!folga){ setSemaforo("nao",t("sem_gas"),t("sem_gas_d")); $("btnPagar").classList.add("oculto"); $("btnAprovar").classList.add("oculto"); return; }
+      setSemaforo("pronto",t("sem_pronto"),t("sem_pronto_d")); $("btnPagar").classList.remove("oculto"); $("btnAprovar").classList.add("oculto"); }
     else if(/aprovar|approve/i.test(motivo)){
       setSemaforo("falta",t("sem_falta"),t("sem_falta_d").replace("TOKEN",nomeMoeda(cobrancaAtual.moeda)));
       $("btnAprovar").classList.remove("oculto"); $("btnAprovar").textContent=t("btn_aprovar")+" "+nomeMoeda(cobrancaAtual.moeda); $("btnPagar").classList.add("oculto");
@@ -1375,10 +1404,9 @@ document.addEventListener("click", e=>{ if(!e.target.closest("#comboDesc")) fech
 
 // ---------- cartao da rede Arc (wallet_addEthereumChain) ----------
 $("rvRpc").textContent = RPCS[0];
+$("rvChain").textContent = String(CHAIN_ID);
 $("rvExp").href = EXPLORER;
 $("rvExp").textContent = EXPLORER.replace(/^https?:\/\//,"");
-$("rvFaucet").href = FAUCET;
-$("rvFaucet").textContent = FAUCET.replace(/^https?:\/\//,"");
 
 $("btnVerRede").onclick=()=>{
   const d=$("redeDados"); const aberto=d.classList.toggle("aberto");
@@ -1388,7 +1416,7 @@ document.querySelectorAll("[data-copia]").forEach(b=>{
   b.onclick=()=>{ navigator.clipboard.writeText($(b.dataset.copia).textContent.trim()).then(()=>toast(t("t_copiado"))); };
 });
 
-/* Pede a carteira para cadastrar a Arc Testnet. Se ja estiver cadastrada,
+/* Pede a carteira para cadastrar a Arc. Se ja estiver cadastrada,
    a carteira apenas troca para ela sem criar duplicada. */
 async function adicionarRede(){
   if(!window.ethereum){ toast(t("t_semcart")); return; }
